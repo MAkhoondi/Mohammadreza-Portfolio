@@ -362,25 +362,15 @@ html[dir="rtl"] .nav__link::after {
 }
 
 /* هدر موبایل فقط حدود ۶px فضای خالی بالا/پایین دکمه داره؛ بالا رفتن پیش‌فرض flag-button (۵px هاور، ۶px هنگام لمس)
-   دکمه رو به لبه‌ی بالای صفحه می‌چسبونه، پس برای این دکمه کوتاه‌تر می‌شه */
-/* جابه‌جایی با hover/active فقط برای دستگاه‌های با ماوس واقعی؛ رو موبایل :active
-   گاهی درست پاک نمی‌شه و دکمه تا لمس جای دیگه‌ای از صفحه "معلق" می‌مونه */
-@media (hover: hover) {
-  .nav__toggle.flag-button:hover {
-    transform: translateY(-2px);
-  }
-
-  .nav__toggle.flag-button:active {
-    transform: translateY(-3px);
-  }
-}
-
-/* رنگ‌آمیزی حالت باز فقط به کلاس open وابسته‌ست (نه :hover) تا تو موبایل
-   که :hover بعد از لمس "گیر" می‌کنه، بک‌گراند آبی بعد از بستن منو باقی نمونه */
+   دکمه رو به لبه‌ی بالای صفحه می‌چسبونه، پس برای این دکمه کوتاه‌تر می‌شه. به همین خاطر این دکمه از
+   مکانیزم مشترک flag-button.is-pressed (پایین‌تر) کنار گذاشته شده (در JS هم با :not(.nav__toggle) حذف شده)
+   و رنگ‌آمیزی/بالا رفتنِ حالت باز، هر دو فقط به کلاس open وابسته‌ست (نه :hover/:active) تا تو موبایل
+   که این pseudo-class ها بعد از لمس "گیر" می‌کنن، دکمه بعد از بستن منو روی هوا یا آبی باقی نمونه */
 .nav__toggle.open {
   color: #fff;
   background-color: var(--first-color);
   border-color: var(--first-color);
+  transform: translateY(-3px);
 }
 
 @media (hover: hover) {
@@ -442,6 +432,19 @@ html[dir="rtl"] .nav__link::after {
   transform: translateY(-6px) rotate(-45deg);
 }
 
+/* با لمس فضای خالی بیرون از سایدبار، منو بسته نمی‌شه؛ به‌جاش این تپش رو دکمه‌ی ضربدر
+   اجرا می‌شه تا به کاربر نشون بده فقط با زدن همین دکمه می‌تونه سایدبار رو ببنده */
+@keyframes nav-toggle-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.2); }
+  65% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.nav__toggle.pulse {
+  animation: nav-toggle-pulse 0.5s ease;
+}
+
 /*Active menu*/
 .active-link::after {
   transform: scaleX(1);
@@ -479,8 +482,17 @@ html[dir="rtl"] .nav__link::after {
   color: var(--text-color);
 }
 
-.home__social-icon:hover {
-  color: var(--first-color);
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل. موبایل: با لمس (کلاس is-pressed روی آیکون داخلش) */
+@media screen and (min-width: 768px) {
+  .home__social-icon:hover {
+    color: var(--first-color);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .home__social-icon:has(.is-pressed) {
+    color: var(--first-color);
+  }
 }
 
 .home__img {
@@ -549,7 +561,10 @@ html[dir="rtl"] .nav__link::after {
 
 @media (prefers-reduced-motion: reduce) {
   .home__orbit-track,
-  .home__orbit-icon {
+  .home__orbit-icon,
+  .nav__toggle.pulse,
+  .btn-call.is-pressed .icon-hover,
+  .btn-send.is-pressed .icon-hover {
     animation: none;
   }
 }
@@ -590,22 +605,41 @@ html[dir="rtl"] .nav__link::after {
 
 /* ==================== CALL ME BUTTON (Phone Effect) ==================== */
 
-/* هاور دکمه تماس: پس‌زمینه خالی می‌شود و متن رنگی می‌شود */
-.btn-call:hover {
-  background-color: transparent;
-  color: var(--first-color);
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل (پس‌زمینه خالی می‌شود و متن/آیکون رنگی می‌شود و می‌لرزد) */
+@media screen and (min-width: 768px) {
+  .btn-call:hover {
+    background-color: transparent;
+    color: var(--first-color);
+  }
+
+  .btn-call:hover .icon-default {
+    display: none;
+  }
+
+  .btn-call:hover .icon-hover {
+    display: inline-block;
+    color: var(--first-color);
+    animation: phoneWobble 0.5s infinite;
+  }
 }
 
-/* وقتی موس روی دکمه رفت، آیکون ثابت مخفی شود */
-.btn-call:hover .icon-default {
-  display: none;
-}
+/* موبایل: به‌جای :hover (که روی لمس و مخصوصاً بعد از ترک صفحه برای باز شدن برنامه‌ی تلفن "گیر" می‌کنه)
+   از کلاس is-pressed استفاده شده که با pointerdown/pointerup در main.js کنترل و همیشه درست پاک می‌شه */
+@media screen and (max-width: 767px) {
+  .btn-call.is-pressed {
+    background-color: transparent;
+    color: var(--first-color);
+  }
 
-/* وقتی موس روی دکمه رفت، آیکون دوم ظاهر شده و می‌لرزد */
-.btn-call:hover .icon-hover {
-  display: inline-block;
-  color: var(--first-color);
-  animation: phoneWobble 0.5s infinite;
+  .btn-call.is-pressed .icon-default {
+    display: none;
+  }
+
+  .btn-call.is-pressed .icon-hover {
+    display: inline-block;
+    color: var(--first-color);
+    animation: phoneWobble 0.5s infinite;
+  }
 }
 
 /* ==================== SEND MESSAGE BUTTON (Plane Effect) ==================== */
@@ -629,24 +663,46 @@ html[dir="rtl"] .nav__link::after {
   transition: width 0.5s ease;
 }
 
-/* هاور دکمه ارسال */
-.btn-send:hover {
-  color: var(--first-color);
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .btn-send:hover {
+    color: var(--first-color);
+  }
+
+  .btn-send:hover::before {
+    width: 100%;
+  }
+
+  .btn-send:hover .icon-default {
+    display: none;
+  }
+
+  .btn-send:hover .icon-hover {
+    display: inline-block;
+    color: var(--first-color);
+    animation: flyPlane 0.6s ease-in-out forwards;
+  }
 }
 
-.btn-send:hover::before {
-  width: 100%;
-}
+/* موبایل: فشردن دکمه ارسال (به‌جای :hover که روی لمس گیر می‌کنه؛ کلاس is-pressed از main.js کنترل می‌شه) */
+@media screen and (max-width: 767px) {
+  .btn-send.is-pressed {
+    color: var(--first-color);
+  }
 
-/* تعویض آیکون‌ها در دکمه ارسال */
-.btn-send:hover .icon-default {
-  display: none;
-}
+  .btn-send.is-pressed::before {
+    width: 100%;
+  }
 
-.btn-send:hover .icon-hover {
-  display: inline-block;
-  color: var(--first-color);
-  animation: flyPlane 0.6s ease-in-out forwards;
+  .btn-send.is-pressed .icon-default {
+    display: none;
+  }
+
+  .btn-send.is-pressed .icon-hover {
+    display: inline-block;
+    color: var(--first-color);
+    animation: flyPlane 0.6s ease-in-out forwards;
+  }
 }
 
 /* ==================== ANIMATIONS ==================== */
@@ -1188,8 +1244,16 @@ html[dir="rtl"] .nav__link::after {
   color: #fff;
 }
 
-.footer__icon:hover {
-  color: var(--first-color);
+@media screen and (min-width: 768px) {
+  .footer__icon:hover {
+    color: var(--first-color);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .footer__icon:has(.is-pressed) {
+    color: var(--first-color);
+  }
 }
 
 .footer__copy {
@@ -1698,7 +1762,7 @@ html[dir="rtl"] .nav__link::after {
   }
 }
 
-/* بلند شدن نرم دکمه Call Me هنگام هاور */
+/* بلند شدن نرم دکمه‌های flag-button (Call Me، شبکه‌های اجتماعی، ارسال پیام، لینک‌های منو و ...) */
 .flag-button {
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1706,14 +1770,28 @@ html[dir="rtl"] .nav__link::after {
     color 0.4s ease;
 }
 
-.flag-button:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+/* دسکتاپ: هاور/فشردن واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .flag-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+
+  .flag-button:active {
+    transform: translateY(-6px);
+    transition-duration: 0.15s;
+  }
 }
 
-.flag-button:active {
-  transform: translateY(-6px);
-  transition-duration: 0.15s;
+/* موبایل: به‌جای :hover/:active (که روی لمس - مخصوصاً وقتی لمس باعث خروج از صفحه بشه، مثل دکمه‌ی تماس -
+   "گیر" می‌کنن)، این بالا رفتن با کلاس is-pressed از pointerdown/pointerup در main.js کنترل می‌شه
+   و با رها شدن لمس یا برگشتن به صفحه همیشه درست پاک می‌شه */
+@media screen and (max-width: 767px) {
+  .flag-button.is-pressed {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+    transition-duration: 0.15s;
+  }
 }
 
 /* ==================== زبان (فارسی/انگلیسی) ==================== */
@@ -1737,12 +1815,26 @@ html[dir="rtl"] .nav__link::after {
               border-color 0.3s ease;
 }
 
-.lang-toggle:hover {
-  color: #fff;
-  background-color: var(--first-color);
-  border-color: var(--first-color);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .lang-toggle:hover {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* موبایل: به‌جای :hover (که روی لمس گیر می‌کنه)، کلاس is-pressed از main.js کنترل می‌شه */
+@media screen and (max-width: 767px) {
+  .lang-toggle.is-pressed {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
 }
 
 /* بج کوچیک کد زبان (EN/FA) که پشت عنوان زبان مقصد میاد */
@@ -1760,9 +1852,18 @@ html[dir="rtl"] .nav__link::after {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.lang-toggle:hover .lang-toggle__badge {
-  background-color: #fff;
-  color: var(--first-color);
+@media screen and (min-width: 768px) {
+  .lang-toggle:hover .lang-toggle__badge {
+    background-color: #fff;
+    color: var(--first-color);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .lang-toggle.is-pressed .lang-toggle__badge {
+    background-color: #fff;
+    color: var(--first-color);
+  }
 }
 
 /* ==================== دانلود رزومه ==================== */
@@ -1793,12 +1894,26 @@ html[dir="rtl"] .nav__link::after {
   display: none;
 }
 
-.resume-download:hover {
-  color: #fff;
-  background-color: var(--first-color);
-  border-color: var(--first-color);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .resume-download:hover {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* موبایل: به‌جای :hover (که روی لمس گیر می‌کنه)، کلاس is-pressed از main.js کنترل می‌شه */
+@media screen and (max-width: 767px) {
+  .resume-download.is-pressed {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -1842,12 +1957,26 @@ html[dir="rtl"] .nav__link::after {
               border-color 0.3s ease;
 }
 
-.theme-toggle:hover {
-  color: #fff;
-  background-color: var(--first-color);
-  border-color: var(--first-color);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .theme-toggle:hover {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* موبایل: به‌جای :hover (که روی لمس گیر می‌کنه)، کلاس is-pressed از main.js کنترل می‌شه */
+@media screen and (max-width: 767px) {
+  .theme-toggle.is-pressed {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
 }
 
 /* چرخش فقط روی آیکون داخل دکمه اجرا می‌شه، نه کل دکمه؛ وگرنه tooltip (که pseudo-element خود دکمه‌ست) هم کج می‌شد */
@@ -1856,8 +1985,16 @@ html[dir="rtl"] .nav__link::after {
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.theme-toggle:hover i {
-  transform: rotate(20deg);
+@media screen and (min-width: 768px) {
+  .theme-toggle:hover i {
+    transform: rotate(20deg);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .theme-toggle.is-pressed i {
+    transform: rotate(20deg);
+  }
 }
 
 /* Tooltip دکمه‌ی تم: متنش با data-tooltip از main.js تنظیم و متناسب با تم/زبان فعلی به‌روز می‌شه */
@@ -1896,13 +2033,22 @@ html[dir="rtl"] .nav__link::after {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
-.theme-toggle:hover::before,
-.theme-toggle:hover::after,
+/* تولتیپ فقط با فوکوس کیبورد همیشه نشون داده می‌شه؛ نسخه‌ی هاور پایین‌تر و فقط برای دسکتاپه
+   (تا رو موبایل بعد از لمس گیر نکنه و باز نمونه) */
 .theme-toggle:focus-visible::before,
 .theme-toggle:focus-visible::after {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
+}
+
+@media screen and (min-width: 768px) {
+  .theme-toggle:hover::before,
+  .theme-toggle:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* در حالت موبایل، دکمه‌های زبان/تم رو کنار آیکون همبرگری نشون می‌دیم */

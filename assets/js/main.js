@@ -282,13 +282,43 @@ if(navToggleBtn && navMenuEl){
     })
 }
 
-// کلیک روی بخش محو‌شده‌ی بیرون از سایدبار هم اون رو می‌بنده
-if(navOverlayEl) navOverlayEl.addEventListener('click', ()=> setMenuOpen(false))
+// کلیک روی بخش محو‌شده‌ی بیرون از سایدبار، منو رو نمی‌بنده؛ فقط دکمه‌ی ضربدر این کار رو می‌کنه.
+// به‌جاش یه تپش رو همون دکمه اجرا می‌شه تا به کاربر نشون بده باید همونجا رو بزنه
+function pulseNavToggle(){
+    if(!navToggleBtn) return
+    navToggleBtn.classList.remove('pulse')
+    void navToggleBtn.offsetWidth
+    navToggleBtn.classList.add('pulse')
+}
+if(navToggleBtn) navToggleBtn.addEventListener('animationend', ()=> navToggleBtn.classList.remove('pulse'))
+if(navOverlayEl) navOverlayEl.addEventListener('click', pulseNavToggle)
 
 // اگه سایدبار باز باشه و عرض پنجره به حالت دسکتاپ برسه، حالت باز (و قفل اسکرول) نباید باقی بمونه
 window.matchMedia('(min-width: 768px)').addEventListener('change', e => {
     if(e.matches) setMenuOpen(false)
 })
+
+/*===== PRESS FEEDBACK (جایگزین :hover/:active که روی لمس گیر می‌کنن) =====*/
+// دکمه‌هایی مثل تماس/دانلود رزومه/شبکه‌های اجتماعی کاربر رو از صفحه خارج می‌کنن (برنامه تلفن، مرورگر جدید و...)؛
+// وقتی برمی‌گرده، :hover/:active مرورگر گاهی روشون "گیر" کرده می‌مونه. به‌جاش همین کلاس is-pressed
+// فقط برای مدت واقعی لمس/فشردن با pointer event ها کنترل می‌شه و با رها شدن یا برگشتن به صفحه همیشه پاک می‌شه
+// دکمه‌ی nav-toggle از این مکانیزم مستثناست؛ بالا رفتنش فقط به کلاس open (در پایین همین فایل) وابسته‌ست
+const PRESSABLE_SELECTOR = '.flag-button:not(.nav__toggle), .lang-toggle, .theme-toggle, .resume-download'
+let pressedEl = null
+function setPressed(el){
+    if(pressedEl && pressedEl !== el) pressedEl.classList.remove('is-pressed')
+    pressedEl = el
+    if(pressedEl) pressedEl.classList.add('is-pressed')
+}
+document.addEventListener('pointerdown', e => {
+    const el = e.target.closest(PRESSABLE_SELECTOR)
+    if(el) setPressed(el)
+})
+document.addEventListener('pointerup', () => setPressed(null))
+document.addEventListener('pointercancel', () => setPressed(null))
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') setPressed(null) })
+window.addEventListener('pageshow', () => setPressed(null))
+window.addEventListener('blur', () => setPressed(null))
 
 /*==================== REMOVE MENU MOBILE ====================*/
 const navLink = document.querySelectorAll('.nav__link')
