@@ -1,5 +1,52 @@
-/*===== GOOGLE FONTS =====*/
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+/*===== FONTS (self-hosted Poppins, subset: Latin) =====*/
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/poppins-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/poppins-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/poppins-700.woff2") format("woff2");
+}
+
+/*===== FONTS (self-hosted Vazirmatn, subset: Arabic/Persian) =====*/
+/* فایل، فونت متغیره؛ هر سه وزن به همون یک فایل اشاره می‌کنن و مرورگر وزن درست رو ازش استخراج می‌کنه */
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/vazirmatn-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/vazirmatn-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/vazirmatn-var.woff2") format("woff2");
+}
+
 /*===== VARIABLES CSS =====*/
 :root {
   --header-height: 3rem;
@@ -10,6 +57,16 @@
   --hue-color: 224;
   --first-color: hsl(var(--hue-color), 89%, 60%);
   --second-color: hsl(var(--hue-color), 56%, 12%);
+  /*===== تم روشن (پیش‌فرض) =====*/
+  color-scheme: light;
+  --bg-color: #fff;
+  --surface-color: #fff;
+  --text-color: var(--second-color);
+  --text-muted: #777;
+  --border-color: #ccc;
+  --track-color: #e0e0e0;
+  --card-shadow: 0px 4px 25px rgba(14, 36, 49, 0.15);
+  --header-shadow: 0 1px 4px rgba(146, 161, 176, 0.15);
   /*===== Fuente y tipografia =====*/
   --body-font: "Poppins", sans-serif;
   --big-font-size: 2rem;
@@ -25,6 +82,7 @@
   --z-back: -10;
   --z-fixed: 100;
 }
+
 @media screen and (min-width: 968px) {
   :root {
     --big-font-size: 3.5rem;
@@ -35,22 +93,37 @@
 }
 
 /*===== BASE =====*/
-*, ::before, ::after {
+*,
+::before,
+::after {
   box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   margin: var(--header-height) 0 0 0;
   font-family: var(--body-font);
   font-size: var(--normal-font-size);
-  color: var(--second-color);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 
-h1, h2, p {
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+h1,
+h2,
+p {
   margin: 0;
 }
 
@@ -73,22 +146,42 @@ img {
 /*===== CLASS CSS ===== */
 .section-title {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
   font-size: var(--h2-font-size);
   color: var(--first-color);
   margin-top: var(--mb-2);
   margin-bottom: var(--mb-4);
   text-align: center;
 }
+
+.section-title__icon {
+  font-size: 0.9em;
+}
+
+/* خط زیر عنوان بخش‌ها با متغیر --underline-progress (که در main.js همگام با افکت تایپ عنوان به‌روز می‌شه) رشد می‌کنه؛
+   جهتش هم مثل خط زیر منو، بسته به html[dir] از چپ یا راست باز می‌شه */
 .section-title::after {
   position: absolute;
   content: "";
-  width: 64px;
+  width: 100%;
   height: 0.18rem;
   left: 0;
-  right: 0;
-  margin: auto;
   top: 2rem;
   background-color: var(--first-color);
+  transform: scaleX(var(--underline-progress, 0));
+  transform-origin: left;
+  /* مدت این ترنزیشن از main.js (هم‌زمان با مدت‌زمان تایپ عنوان) تنظیم می‌شه تا خط به‌صورت کاملاً پیوسته و بدون پرش رشد کنه */
+  transition: transform var(--underline-duration, 900ms) linear;
+}
+
+html[dir="rtl"] .section-title::after {
+  transform-origin: right;
 }
 
 .section {
@@ -110,8 +203,9 @@ img {
   top: 0;
   left: 0;
   z-index: var(--z-fixed);
-  background-color: #fff;
-  box-shadow: 0 1px 4px rgba(146, 161, 176, 0.15);
+  background-color: var(--surface-color);
+  box-shadow: var(--header-shadow);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /*===== NAV =====*/
@@ -122,29 +216,98 @@ img {
   align-items: center;
   font-weight: var(--font-semi);
 }
+
+.nav__overlay {
+  display: none;
+}
+
 @media screen and (max-width: 767px) {
+  /* سایدبار شیشه‌ای: پس‌زمینه‌ی نیمه‌شفاف + محو کردن (blur) هر چیزی که پشتشه؛
+     لبه‌ی داخلی (border-inline-start و گردی گوشه‌ها) با logical property تعریف شده تا در فارسی/انگلیسی خودکار سمت درست بیفته */
   .nav__menu {
     position: fixed;
+    z-index: 2;
     top: var(--header-height);
-    right: -100%;
+    bottom: 0;
+    right: 0;
     width: 80%;
-    height: 100%;
     padding: 2rem;
-    background-color: var(--second-color);
-    transition: 0.5s;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: linear-gradient(160deg,
+        hsla(var(--hue-color), 60%, 20%, 0.6),
+        hsla(var(--hue-color), 56%, 10%, 0.72));
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    border-inline-start: 1px solid rgba(255, 255, 255, 0.16);
+    border-start-start-radius: 1.5rem;
+    border-end-start-radius: 1.5rem;
+    /* سایه فقط به سمت داخل (صفحه) می‌افته؛ spread منفی مانع نشت سایه به بالا روی هدر می‌شه (نسخه‌ی RTL پایین‌تر آینه‌ست) */
+    box-shadow: -30px 0 36px -28px rgba(0, 0, 0, 0.5);
+    /* بسته: بیرون از صفحه (translateX روی GPU انیمیت می‌شه، نه right/left که هر فریم layout می‌خواد) و visibility: hidden
+       (با تأخیر برابر مدت انیمیشن، تا موقع بسته شدن انیمیشن دیده بشه) تا لینک‌های داخلش با Tab فوکوس نگیرن.
+       منحنی (0.4, 0, 0.2, 1) سرعت اولیه و انتهایی صفر داره، یعنی شروع و پایان کاملاً نرم */
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s linear 0.5s;
+  }
+
+  .nav__menu.show {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s linear 0s;
+  }
+
+  /* لایه‌ی محو‌کننده‌ی صفحه‌ی اصلی زیر سایدبار (هدر بیرونش می‌مونه تا دکمه‌ی ضربدر/تم/زبان همچنان واضح باشن) */
+  .nav__overlay {
+    display: block;
+    position: fixed;
+    z-index: 1;
+    top: var(--header-height);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(8, 12, 28, 0.35);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.55s;
+  }
+
+  .nav__overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
   }
 }
+
+/* وقتی سایدبار موبایل بازه، اسکرول صفحه‌ی اصلی قطع می‌شه؛ scrollbar-gutter مانع پرش چیدمان (در مرورگرهای دسکتاپ با اسکرول‌بار کلاسیک) می‌شه */
+html.menu-open {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
 .nav__item {
   margin-bottom: var(--mb-4);
 }
+
 .nav__link {
   position: relative;
+  display: inline-flex;
+  align-items: center;
   color: #fff;
+  white-space: nowrap;
 }
-.nav__link:hover {
-  position: relative;
+
+.nav__link-icon {
+  margin-inline-end: 6px;
+  font-size: 1.1rem;
 }
-.nav__link:hover::after {
+
+/* خط زیر لینک‌های منو: همیشه حاضر ولی جمع‌شده (scaleX(0))، و هنگام هاور/اکتیو شدن به‌آرامی از جهت متناسب با زبان صفحه باز می‌شود */
+.nav__link::after {
   position: absolute;
   content: "";
   width: 100%;
@@ -152,30 +315,139 @@ img {
   left: 0;
   top: 2rem;
   background-color: var(--first-color);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+.nav__link:hover::after {
+  transform: scaleX(1);
+}
+
+html[dir="rtl"] .nav__link::after {
+  transform-origin: right;
+}
+
 .nav__logo {
-  color: var(--second-color);
+  color: var(--text-color);
 }
+
+/* دکمه‌ی منوی موبایل: هم‌قواره با دکمه‌های تم/رزومه‌ی هدر (دایره‌ی ۲.۲rem با بوردر)؛ سه خط گرد که با باز شدن سایدبار
+   به ضربدر تبدیل می‌شن. افکت بالا رفتن نرم هاور هم از کلاس flag-button (در HTML) میاد.
+   نمایشش در دسکتاپ (display: none) پایین‌تر و داخل media query مربوطه تعریف شده */
 .nav__toggle {
-  color: var(--second-color);
-  font-size: 1.5rem;
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  color: var(--text-color);
+  background-color: transparent;
+  border: 1.5px solid var(--text-color);
+  border-radius: 50%;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* با specificity بالاتر از .flag-button تا ترنزیشن اون (که border-color نداره) این ترنزیشن رو override نکنه */
+.nav__toggle.flag-button {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.4s ease,
+              color 0.4s ease,
+              border-color 0.4s ease;
+}
+
+/* هدر موبایل فقط حدود ۶px فضای خالی بالا/پایین دکمه داره؛ بالا رفتن پیش‌فرض flag-button (۵px هاور، ۶px هنگام لمس)
+   دکمه رو به لبه‌ی بالای صفحه می‌چسبونه، پس برای این دکمه کوتاه‌تر می‌شه. به همین خاطر این دکمه از
+   مکانیزم مشترک flag-button.is-pressed (پایین‌تر) کنار گذاشته شده (در JS هم با :not(.nav__toggle) حذف شده)
+   و رنگ‌آمیزی/بالا رفتنِ حالت باز، هر دو فقط به کلاس open وابسته‌ست (نه :hover/:active) تا تو موبایل
+   که این pseudo-class ها بعد از لمس "گیر" می‌کنن، دکمه بعد از بستن منو روی هوا یا آبی باقی نمونه */
+.nav__toggle.open {
+  color: #fff;
+  background-color: var(--first-color);
+  border-color: var(--first-color);
+  transform: translateY(-3px);
+}
+
+@media (hover: hover) {
+  .nav__toggle:hover {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+  }
+}
+
+/* align-items: flex-start در ستون flex، خودکار سمت شروعِ جهت صفحه رو می‌گیره (راست در فارسی، چپ در انگلیسی) */
+.nav__toggle-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 16px;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav__toggle-icon span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background-color: currentColor;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              width 0.3s ease,
+              opacity 0.25s ease;
+}
+
+/* خط وسط کوتاه‌تر است و هنگام هاور تا انتها باز می‌شود */
+.nav__toggle-icon span:nth-child(2) {
+  width: 65%;
+}
+
+@media (hover: hover) {
+  .nav__toggle:hover .nav__toggle-icon span:nth-child(2) {
+    width: 100%;
+  }
+}
+
+/* حالت باز: آیکون ۹۰ درجه می‌چرخه، خط بالا/پایین به ضربدر تبدیل و خط وسط محو می‌شه
+   (فاصله‌ی مرکز دو خط کناری تا مرکز = ارتفاع خط ۲px + gap ۴px = ۶px) */
+.nav__toggle.open .nav__toggle-icon {
+  transform: rotate(90deg);
+}
+
+.nav__toggle.open .nav__toggle-icon span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav__toggle.open .nav__toggle-icon span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.nav__toggle.open .nav__toggle-icon span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* با لمس فضای خالی بیرون از سایدبار، منو بسته نمی‌شه؛ به‌جاش این تپش رو دکمه‌ی ضربدر
+   اجرا می‌شه تا به کاربر نشون بده فقط با زدن همین دکمه می‌تونه سایدبار رو ببنده */
+@keyframes nav-toggle-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.2); }
+  65% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.nav__toggle.pulse {
+  animation: nav-toggle-pulse 0.5s ease;
 }
 
 /*Active menu*/
 .active-link::after {
-  position: absolute;
-  content: "";
-  width: 100%;
-  height: 0.18rem;
-  left: 0;
-  top: 2rem;
-  background-color: var(--first-color);
-}
-
-/*=== Show menu ===*/
-.show {
-  right: 0;
+  transform: scaleX(1);
 }
 
 /*===== HOME =====*/
@@ -184,64 +456,292 @@ img {
   row-gap: 5rem;
   padding: 4rem 0 5rem;
 }
+
 .home__data {
   align-self: center;
 }
+
 .home__title {
   font-size: var(--big-font-size);
   margin-bottom: var(--mb-5);
 }
+
 .home__title-color {
   color: var(--first-color);
-  font-size: 50px;
 }
+
+/* اسم کامل («محمدرضا آخوندی» / «Mohammadreza Akhoondi») از ستون متن بلندتر است. اندازه‌ی تیتر از عرض ستون حساب می‌شود
+   (--title-room = عرض ستون، --title-fit = عرض طولانی‌ترین خط بر حسب em با کمی حاشیه) تا اسم همیشه در یک خط بماند و تیتر سه خطی
+   بماند. هیچ‌وقت از --big-font-size بزرگ‌تر نمی‌شود. اسکرول‌بارِ خودِ مرورگر در این سایت مخفی است، پس 100vw برابر عرض واقعی صفحه است */
+.home__title {
+  --title-room: calc(100vw - 2rem);
+  font-size: min(var(--big-font-size), calc(var(--title-room) / var(--title-fit, 10.1)));
+}
+
+html[lang="fa"] .home__title {
+  --title-fit: 10.1;
+}
+
+html[lang="en"] .home__title {
+  --title-fit: 14.2;
+}
+
+/* تبلت: ستون متن کنار عکس باریک است؛ اندازه از ۱.۷۵rem کوچک‌تر نمی‌شود و اگر لازم شد اسم به دو خط می‌شکند (ارتفاع صفحه زیاد است) */
+@media screen and (min-width: 768px) {
+  .home__title {
+    --title-room: calc(100vw - 2rem - 420px);
+    font-size: clamp(1.75rem, calc(var(--title-room) / var(--title-fit, 10.1)), var(--big-font-size));
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .home__title {
+    --title-room: calc(min(100vw, 1056px) - 2rem - 480px);
+  }
+}
+
 .home__social {
   display: flex;
   flex-direction: column;
 }
+
 .home__social-icon {
   width: max-content;
   margin-bottom: var(--mb-2);
   font-size: 1.5rem;
-  color: var(--second-color);
+  color: var(--text-color);
 }
-.home__social-icon:hover {
-  color: var(--first-color);
+
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل. موبایل: با لمس (کلاس is-pressed روی آیکون داخلش) */
+@media screen and (min-width: 768px) {
+  .home__social-icon:hover {
+    color: var(--first-color);
+  }
 }
+
+@media screen and (max-width: 767px) {
+  .home__social-icon:has(.is-pressed) {
+    color: var(--first-color);
+  }
+}
+
 .home__img {
   position: absolute;
   right: 0;
   bottom: 0;
   width: 260px;
 }
+
 .home__blob {
   fill: var(--first-color);
 }
+
 .home__blob-img {
-  width: 360px;
+  width: 376px;
 }
 
-/*BUTTONS*/
-.button {
-  display: inline-block;
-  background-color: var(--first-color);
-  color: #fff;
-  padding: 0.75rem 2.5rem;
-  font-weight: var(--font-semi);
-  border-radius: 0.5rem;
-  transition: background-color 0.3s ease;
+/* ==== Orbiting skill icons around hero photo (all screen sizes, pure CSS) ==== */
+.home__orbit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  --orbit-radius: 125px;
+}
+
+.home__orbit-track {
+  position: absolute;
+  inset: 0;
+  animation: home-orbit-spin 27s linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.home__orbit-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  text-decoration: none;
-}
-.button:hover {
-  box-shadow: 0px 10px 36px rgba(0, 0, 0, 0.15);
-  background-color: #218838;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--surface-color);
+  box-shadow: var(--card-shadow);
+  color: var(--first-color);
+  font-size: 1.15rem;
+  transform: translate(-50%, -50%) translateY(calc(-1 * var(--orbit-radius, 230px)));
+  animation: home-orbit-spin-reverse 27s linear infinite;
+  animation-delay: var(--delay, 0s);
 }
 
-.button i {
-  font-size: 18px;
+.home__orbit-logo.icon-mask {
+  width: 20px;
+  height: 20px;
+}
+
+@keyframes home-orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes home-orbit-spin-reverse {
+  from { transform: translate(-50%, -50%) translateY(calc(-1 * var(--orbit-radius, 230px))) rotate(0deg); }
+  to { transform: translate(-50%, -50%) translateY(calc(-1 * var(--orbit-radius, 230px))) rotate(-360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home__orbit-track,
+  .home__orbit-icon,
+  .nav__toggle.pulse,
+  .btn-call.is-pressed .icon-hover,
+  .btn-send.is-flying .btn-send__icon,
+  .btn-send.is-landing .btn-send__icon {
+    animation: none;
+  }
+}
+
+/* ==================== BUTTONS CONFIGURATION ==================== */
+/* تعریف استایل پایه دکمه‌ها هماهنگ با متغیرهای قالب شما */
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 2.5rem;
+  background-color: var(--first-color);
+  /* رنگ اصلی سایت شما */
+  border: 2px solid var(--first-color);
+  border-radius: 0.5rem;
+  font-weight: var(--font-semi);
+  color: #fff;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  cursor: pointer;
+  text-decoration: none;
+  gap: 8px;
+  /* فاصله بین آیکون و متن */
+}
+
+/* تنظیم اندازه آیکون‌ها */
+.btn i {
+  font-size: 1.3rem;
+  transition: 0.3s;
+}
+
+/* مخفی کردن آیکون هاور در حالت عادی */
+.btn .icon-hover {
+  display: none;
+}
+
+/* ==================== CALL ME BUTTON (Phone Effect) ==================== */
+
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل (پس‌زمینه خالی می‌شود و متن/آیکون رنگی می‌شود و می‌لرزد) */
+@media screen and (min-width: 768px) {
+  .btn-call:hover {
+    background-color: transparent;
+    color: var(--first-color);
+  }
+
+  .btn-call:hover .icon-default {
+    display: none;
+  }
+
+  .btn-call:hover .icon-hover {
+    display: inline-block;
+    color: var(--first-color);
+    animation: phoneWobble 0.5s infinite;
+  }
+}
+
+/* موبایل: به‌جای :hover (که روی لمس و مخصوصاً بعد از ترک صفحه برای باز شدن برنامه‌ی تلفن "گیر" می‌کنه)
+   از کلاس is-pressed استفاده شده که با pointerdown/pointerup در main.js کنترل و همیشه درست پاک می‌شه */
+@media screen and (max-width: 767px) {
+  .btn-call.is-pressed {
+    background-color: transparent;
+    color: var(--first-color);
+  }
+
+  .btn-call.is-pressed .icon-default {
+    display: none;
+  }
+
+  .btn-call.is-pressed .icon-hover {
+    display: inline-block;
+    color: var(--first-color);
+    animation: phoneWobble 0.5s infinite;
+  }
+}
+
+/* ==================== SEND MESSAGE BUTTON (Plane Effect) ==================== */
+
+.btn-send {
+  width: 100%;
+  /* تمام عرض در فرم */
+  border: 2px solid var(--first-color);
+}
+
+/* هاور (و فشردن در موبایل) فقط همان بلند شدنِ flag-button است و چیزی دیگر عوض نمی‌شود.
+   هواپیما فقط با کلیکِ واقعی پرواز می‌کند: main.js هنگام شروع ارسال (فرم معتبر) کلاس is-flying را می‌گذارد؛ پرواز flyPlane
+   انجام می‌شود و هواپیما تا پایان ارسال بالا-راست می‌ماند. بعد از پایان (موفق یا خطا) کلاس is-landing برگشت نرمش را می‌دهد */
+.btn-send.is-flying .btn-send__icon {
+  animation: flyPlane 0.6s ease-in-out forwards;
+}
+
+.btn-send.is-landing .btn-send__icon {
+  animation: planeLand 0.35s ease-out;
+}
+
+/* ==================== ANIMATIONS ==================== */
+
+/* انیمیشن لرزش تلفن */
+@keyframes phoneWobble {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(15deg);
+  }
+
+  50% {
+    transform: rotate(0deg);
+  }
+
+  75% {
+    transform: rotate(-15deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* برگشت نرم هواپیما از جای پرواز (بالا-راست) به جای اول، بعد از پایان ارسال */
+@keyframes planeLand {
+  from {
+    transform: translate(6px, -6px);
+  }
+
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+/* انیمیشن پرواز موشک */
+@keyframes flyPlane {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  20% {
+    transform: translate(-2px, 2px);
+  }
+
+  100% {
+    transform: translate(6px, -6px);
+    /* پرواز به سمت بالا راست */
+  }
 }
 
 /* ===== ABOUT =====*/
@@ -249,12 +749,15 @@ img {
   row-gap: 2rem;
   text-align: center;
 }
+
 .about__subtitle {
   margin-bottom: var(--mb-2);
 }
+
 .about__img {
   justify-self: center;
 }
+
 .about__img img {
   width: 200px;
   border-radius: 0.5rem;
@@ -274,53 +777,86 @@ img {
   min-width: 300px;
 }
 
-.skills__text {
-  margin-bottom: 8px;
+.skills__subtitle {
+  margin-top: 20px;
 }
 
-.skills__data {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background-color: #fff;
-  border-radius: 0.5rem;
-  box-shadow: 0px 4px 25px rgba(14, 36, 49, 0.15);
+.skills__group {
+  margin-top: 1.5rem;
 }
 
-.skills__names {
+.skills__group-title {
+  margin: 0 0 0.75rem;
+  font-size: var(--normal-font-size);
+  color: var(--text-muted);
+}
+
+.skills__list {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skills__item {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.6rem;
+  box-shadow: var(--card-shadow);
+  font-weight: var(--font-semi);
+  transition: border-color 0.3s ease;
+}
+
+/* هاور واقعی فقط روی دسکتاپ؛ روی موبایل حالت چسبیده‌ی :hover نداریم */
+@media screen and (min-width: 768px) {
+  .skills__item:hover {
+    border-color: var(--first-color);
+  }
 }
 
 .skills__icon {
-  font-size: 2rem;
+  font-size: 1.6rem;
+  transition: filter 0.3s ease;
   color: var(--first-color);
 }
 
-.skills__bar {
-  width: 100%;
-  height: 0.5rem;
-  background-color: #e0e0e0;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
+/* آیکون‌های لوگوی SVG خارجی (Tailwind/Next.js/Vuetify) با CSS mask آبی یک‌دست می‌شن
+   (هم‌رنگ با بقیه‌ی آیکون‌فونت‌ها)، مستقل از تم روشن/تاریک */
+.icon-mask {
+  display: inline-block;
+  background-color: var(--first-color);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
 }
 
-.skill__progress {
-  height: 100%;
-  background-color: #00bcd4;
-  width: 0;
-  border-radius: 0.5rem;
-  transition: width 0.6s ease;
+.icon-mask[data-icon="tailwindcss"] {
+  -webkit-mask-image: url("../img/tailwindcss.svg");
+  mask-image: url("../img/tailwindcss.svg");
 }
 
-.skills__percentage {
-  font-weight: bold;
-  color: #333;
+.icon-mask[data-icon="nextdotjs"] {
+  -webkit-mask-image: url("../img/nextdotjs.svg");
+  mask-image: url("../img/nextdotjs.svg");
+}
+
+.icon-mask[data-icon="vuetify"] {
+  -webkit-mask-image: url("../img/vuetify.svg");
+  mask-image: url("../img/vuetify.svg");
+}
+
+.skills__icon.icon-mask {
+  width: 1.6rem;
+  height: 1.6rem;
 }
 
 .skills__img-container {
@@ -334,20 +870,419 @@ img {
   object-fit: cover;
 }
 
-/* ===== WORK =====*/
+/* ===== Portfolio =====*/
 .work__container {
   row-gap: 2rem;
+  justify-items: center;
 }
+
+/* کل کارت‌ها */
 .work__img {
-  box-shadow: 0px 4px 25px rgba(14, 36, 49, 0.15);
-  border-radius: 0.5rem;
-  overflow: hidden;
+  width: 330px;
+  height: 330px;
+  background: var(--surface-color);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.5),
+    inset 0 0 15px rgba(94, 240, 255, 0.25);
+  transform: perspective(600px) rotateX(0deg) rotateY(0deg);
+  /* بدون important: تا انیمیشن ورود ScrollReveal (اسکرول/رفرش) دست‌نخورده بمونه */
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
 }
+
+/* بعد از تمام شدن انیمیشن ورود (main.js کلاس is-revealed رو اضافه می‌کنه)،
+   ترنزیشن سریع رو قطعی می‌کنیم تا رفتن و برگشتنِ هاور هر دو سریع و قرینه باشن */
+.work__img.is-revealed {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* !important فقط اینجا (روی خود هاور) چون ScrollReveal یک transform/transition inline ست می‌کند؛
+   با اسکوپ کردنش به :hover، انیمیشن ورود اولیه دست‌نخورده می‌ماند و فقط لحظه‌ی هاور سریع/نرم اجرا می‌شود */
+.work__img:hover {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transform: translateY(-10px) !important;
+  box-shadow:
+    0 22px 32px -16px hsla(var(--hue-color), 89%, 60%, 0.35),
+    0 8px 16px -8px rgba(14, 36, 49, 0.2) !important;
+}
+
+/* لوگوی پروژه داخل کارت */
 .work__img img {
-  transition: 1s;
+  transition: transform 0.5s ease;
+  transform-style: preserve-3d;
 }
-.work__img img:hover {
-  transform: scale(1.1);
+
+.work__img:hover img {
+  transform: scale(1.1) translateZ(30px);
+}
+
+/* متن عنوان */
+.work__img:hover .work__title {
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(255, 255, 255, 0.8),
+    0 0 25px rgba(94, 240, 255, 0.75),
+    0 0 45px rgba(200, 107, 255, 0.55);
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+  animation: flicker 3s linear infinite;
+}
+
+.work__img:hover .work__overlay {
+  opacity: 1;
+}
+
+.work__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+}
+
+/* استایل‌های پاپ‌آپ */
+.popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: var(--z-fixed);
+  justify-content: center;
+  align-items: center;
+}
+
+/* popup__window اندازه و جایگاه پنجره رو نگه می‌داره (اسکرول نمی‌خوره)، popup__content داخلش اسکرول می‌خوره */
+.popup__window {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+}
+
+.popup__content {
+  background: var(--surface-color);
+  width: 100%;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transition: background-color 0.3s ease;
+}
+
+.popup__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.3rem;
+  color: var(--text-color);
+  background-color: var(--surface-color);
+  border: 1.5px solid var(--border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
+}
+
+.popup__close:hover {
+  color: #fff;
+  background-color: var(--first-color);
+  border-color: var(--first-color);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+}
+
+.popup__title {
+  font-size: var(--h2-font-size);
+  color: var(--first-color);
+  margin-bottom: var(--mb-2);
+}
+
+/* عنوان یک طرف، چیپ‌های وضعیت/نوع طرف دیگه؛ در جای کم (موبایل) چیپ‌ها زیر عنوان می‌رن */
+.popup__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: var(--mb-2);
+}
+
+.popup__head .popup__title {
+  margin: 0;
+}
+
+.popup__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.popup-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: var(--font-semi);
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+/* نقطه‌ی رنگی جلوی هر چهار چیپ (رنگش همان رنگ متن چیپ است) */
+.popup-chip::before {
+  content: "";
+  flex-shrink: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* نقطه‌ی «در دست توسعه» و «پروژه فعال» پیوسته و نرم می‌تپد (بدون توقف): خودِ نقطه آرام بزرگ و کوچک می‌شود (chipDotBeat)
+   و با شروع هر تپش، یک حلقه‌ی کم‌رنگ از دورش باز می‌شود و محو می‌شود (chipDotRing). هر دو انیمیشن هم‌مدت و هم‌زمان‌اند.
+   مدت یک دور (۱٫۸s) و بزرگیِ تپش (scale) همین‌جاست. رنگ حلقه از --dot-glow هر چیپ می‌آید (box-shadow نمی‌تواند از currentColor کم‌رنگ شود) */
+.popup-chip--progress::before,
+.popup-chip--active::before {
+  animation: chipDotBeat 1.8s ease-in-out infinite,
+             chipDotRing 1.8s ease-out infinite;
+}
+
+@keyframes chipDotBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.35);
+  }
+}
+
+@keyframes chipDotRing {
+  0% {
+    box-shadow: 0 0 0 0 var(--dot-glow);
+  }
+  100% {
+    box-shadow: 0 0 0 0.4rem transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup-chip--progress::before,
+  .popup-chip--active::before {
+    animation: none;
+  }
+}
+
+.popup-chip--progress {
+  --dot-glow: hsla(32, 90%, 40%, 0.45);
+  color: hsl(32, 90%, 30%);
+  background-color: hsla(38, 95%, 50%, 0.16);
+  border-color: hsla(32, 90%, 40%, 0.45);
+}
+
+.popup-chip--done {
+  color: hsl(145, 60%, 25%);
+  background-color: hsla(145, 60%, 40%, 0.14);
+  border-color: hsla(145, 60%, 32%, 0.4);
+}
+
+.popup-chip--active {
+  --dot-glow: hsla(var(--hue-color), 80%, 45%, 0.45);
+  color: hsl(var(--hue-color), 80%, 34%);
+  background-color: hsla(var(--hue-color), 89%, 60%, 0.14);
+  border-color: hsla(var(--hue-color), 80%, 45%, 0.45);
+}
+
+.popup-chip--practice {
+  color: var(--text-color);
+  background-color: hsla(var(--hue-color), 20%, 50%, 0.12);
+  border-color: var(--border-color);
+}
+
+/* نقطه‌ی «تمرینی» کمی کم‌رنگ‌تر از متن است تا خنثی بماند */
+.popup-chip--practice::before {
+  opacity: 0.55;
+}
+
+html[data-theme="dark"] .popup-chip--progress {
+  --dot-glow: hsla(38, 95%, 66%, 0.5);
+  color: hsl(38, 95%, 66%);
+}
+
+html[data-theme="dark"] .popup-chip--done {
+  color: hsl(145, 55%, 62%);
+}
+
+html[data-theme="dark"] .popup-chip--active {
+  --dot-glow: hsla(var(--hue-color), 95%, 76%, 0.5);
+  color: hsl(var(--hue-color), 95%, 76%);
+}
+
+.popup__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 0;
+}
+
+.popup__media {
+  width: 100%;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  max-height: 150px;
+  /* محدود کردن ارتفاع برای هماهنگی */
+}
+
+.popup__media:hover {
+  transform: scale(1.05);
+}
+
+.popup__description {
+  font-size: var(--normal-font-size);
+  color: var(--text-color);
+  margin-top: 1rem;
+}
+
+.popup__description p {
+  margin: 0;
+}
+
+/* برچسب دسته‌بندی (Tech Stack / Key Features) داخل توضیحات پاپ‌آپ */
+.popup__desc-label {
+  margin: 1rem 0;
+  font-size: var(--smaller-font-size);
+  font-weight: var(--font-semi);
+  color: var(--first-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* کارت بیرونی بخش Tech Stack (عنوان + جعبه‌ی چیپ‌ها با هم داخل یه کارت) */
+.popup__desc-card {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.6rem;
+  padding: 0.9rem 1rem;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* بلند شدن نرم کارت‌ها هنگام هاور، هم‌سبک با دکمه‌ی Call Me */
+.popup__desc-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+}
+
+.popup__desc-card + .popup__desc-card {
+  margin-top: 1rem;
+}
+
+.popup__desc-card .popup__desc-label {
+  margin-top: 0;
+}
+
+/* کارت عنوان+گالری اولین فرزند popup__content هست و دکمه‌ی ضربدر روش شناوره؛
+   فاصله‌ی بیشتر از بالا می‌ذاریم تا حتی هنگام هاور (بلند شدن) هم زیر ضربدر نره */
+.popup__media-card {
+  margin-top: 2rem;
+}
+
+/* کارت داخلی/تودرتو، برای گروه‌بندی محتوای اصلی داخل هر کارت (چیپ‌های تکنولوژی، متن معرفی و...) */
+.popup__desc-inner {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.7rem;
+}
+
+/* بج‌های تگ مانند تکنولوژی‌های استفاده‌شده */
+.popup__desc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  /* اسم تکنولوژی‌ها همیشه انگلیسیه، پس ترتیبشون مستقل از جهت صفحه همیشه چپ‌به‌راست بمونه */
+  direction: ltr;
+}
+
+.popup__desc-tags li {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.7rem;
+  border-radius: 1rem;
+  background-color: hsla(var(--hue-color), 89%, 60%, 0.12);
+  color: var(--first-color);
+}
+
+/* لیست ویژگی‌های کلیدی پروژه: هر ویژگی داخل یه کارت جدا */
+.popup__desc-features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.6rem;
+}
+
+.popup__desc-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.6rem;
+  font-size: var(--smaller-font-size);
+  line-height: 1.5;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.popup__desc-features li:hover {
+  /* بلندشدن مثل بقیه‌ی کارت‌ها (۵px)؛ فقط سایه جمع‌وجورتره (مثل دکمه‌های کوچیک تم/زبان)
+     تا داخل عنوان بالاشون یا کارت کناری نره */
+  transform: translateY(-5px);
+  box-shadow: 0 8px 14px -8px hsla(var(--hue-color), 89%, 60%, 0.5);
+}
+
+.popup__desc-features li::before {
+  content: '\2713';
+  flex-shrink: 0;
+  color: var(--first-color);
+  font-weight: 700;
 }
 
 /* ===== CONTACT =====*/
@@ -361,6 +1296,7 @@ img {
   outline: none;
   margin-bottom: var(--mb-4);
 }
+
 .contact__button {
   display: block;
   border: none;
@@ -376,143 +1312,2571 @@ img {
   color: #fff;
   text-align: center;
   font-weight: var(--font-semi);
-  padding: 2rem 0;
+  padding: 3.5rem 0;
 }
+
 .footer__title {
   font-size: 2rem;
   margin-bottom: var(--mb-4);
 }
+
 .footer__social {
   margin-bottom: var(--mb-4);
 }
+
 .footer__icon {
   width: max-content;
   margin-bottom: var(--mb-2);
   font-size: 1.5rem;
   color: #fff;
 }
-.footer__icon:hover {
-  color: var(--first-color);
+
+@media screen and (min-width: 768px) {
+  .footer__icon:hover {
+    color: var(--first-color);
+  }
 }
+
+@media screen and (max-width: 767px) {
+  .footer__icon:has(.is-pressed) {
+    color: var(--first-color);
+  }
+}
+
 .footer__copy {
   font-size: var(--smaller-font-size);
 }
 
 /* ===== MEDIA QUERIES=====*/
+@media screen and (max-width: 767px) {
+  .home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 0;
+    padding: 4rem 0 2rem;
+  }
+
+  .home__img {
+    position: relative;
+    width: 260px;
+    order: -1;
+    margin-bottom: 2.5rem;
+  }
+
+  .home__data {
+    text-align: center;
+    margin-bottom: var(--mb-2);
+  }
+
+  .home__social {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--mb-4);
+  }
+
+  .home__social-icon {
+    margin-bottom: 0;
+    margin-right: var(--mb-2);
+  }
+
+  .skills__container {
+    flex-direction: column;
+  }
+
+  .skills__content {
+    display: contents;
+  }
+
+  .skills__subtitle {
+    order: 1;
+  }
+
+  .skills__img-container {
+    order: 3;
+  }
+
+  .skills__groups {
+    order: 4;
+  }
+}
+
 @media screen and (max-width: 320px) {
   .home {
     row-gap: 2rem;
   }
+
   .home__img {
     width: 200px;
   }
+
+  .home__orbit {
+    --orbit-radius: 95px;
+  }
 }
+
 @media screen and (min-width: 576px) {
   .home {
     padding: 4rem 0 2rem;
   }
+
   .home__social {
     padding-top: 0;
     padding-bottom: 2.5rem;
     flex-direction: row;
     align-self: flex-end;
   }
+
   .home__social-icon {
     margin-bottom: 0;
     margin-right: var(--mb-4);
   }
+
   .home__img {
     width: 300px;
     bottom: 25%;
   }
+
   .about__container {
     grid-template-columns: repeat(2, 1fr);
     align-items: center;
     text-align: initial;
   }
+
   .skills__container {
     grid-template-columns: 0.7fr;
     justify-content: center;
     column-gap: 1rem;
   }
+
   .work__container {
     grid-template-columns: repeat(2, 1fr);
     column-gap: 2rem;
     padding-top: 2rem;
   }
+
   .contact__form {
     width: 360px;
     padding-top: 2rem;
   }
+
   .contact__container {
     justify-items: center;
   }
 }
+
 @media screen and (min-width: 768px) {
   body {
     margin: 0;
   }
+
   .section {
     padding-top: 4rem;
     padding-bottom: 3rem;
   }
+
   .section-title {
     margin-bottom: var(--mb-6);
   }
+
   .section-title::after {
-    width: 80px;
     top: 3rem;
   }
+
   .nav {
     height: calc(var(--header-height) + 1.5rem);
+    max-width: 1200px;
   }
+
   .nav__list {
     display: flex;
     padding-top: 0;
   }
+
   .nav__item {
-    margin-left: var(--mb-6);
+    margin-left: 2rem;
     margin-bottom: 0;
   }
+
   .nav__toggle {
     display: none;
   }
+
   .nav__link {
-    color: var(--second-color);
+    color: var(--text-color);
   }
+
   .home {
     padding: 8rem 0 2rem;
   }
+
   .home__img {
     width: 400px;
     bottom: 10%;
   }
+
+  .home__orbit {
+    --orbit-radius: 230px;
+  }
+
+  /* جلوگیری از رفتن متن هدر زیر عکس (که absolute-position است و فلو رو هل نمی‌ده)
+     وقتی نام طولانی‌تری (مثل Mohammadreza) جایگزین بشه */
+  .home__data {
+    max-width: calc(100% - 420px);
+  }
+
   .about__container {
     padding-top: 2rem;
   }
+
   .about__img img {
     width: 300px;
   }
+
   .skills__container {
     grid-template-columns: repeat(2, 1fr);
     column-gap: 2rem;
     align-items: center;
     text-align: initial;
   }
+
   .work__container {
     grid-template-columns: repeat(3, 1fr);
     column-gap: 2rem;
   }
 }
+
 @media screen and (min-width: 992px) {
   .bd-grid {
     margin-left: auto;
     margin-right: auto;
   }
+
   .home {
     padding: 10rem 0 2rem;
   }
+
   .home__img {
     width: 450px;
+  }
+
+  .home__orbit {
+    --orbit-radius: 255px;
+  }
+
+  .home__data {
+    max-width: calc(100% - 480px);
+  }
+}
+
+/* ==== Coming Soon Spinner (for work cards) ==== */
+.work__comingsoon {
+  width: 330px;
+  height: 330px;
+  background: var(--surface-color);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.5),
+    inset 0 0 15px rgba(94, 240, 255, 0.25);
+  transform: perspective(600px) rotateX(0deg) rotateY(0deg);
+  /* بدون important: تا انیمیشن ورود ScrollReveal دست‌نخورده بمونه */
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.work__comingsoon:hover {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transform: translateY(-10px) !important;
+  box-shadow:
+    0 22px 32px -16px hsla(var(--hue-color), 89%, 60%, 0.35),
+    0 8px 16px -8px rgba(14, 36, 49, 0.2) !important;
+}
+
+/* Spinner Base */
+.spinner {
+  --scale: 1;
+  --rot: 0deg;
+  width: 70px;
+  height: 70px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid rgba(94, 240, 255, 0.7);
+  border-right: 3px solid rgba(200, 107, 255, 0.5);
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  box-shadow:
+    0 0 10px rgba(94, 240, 255, 0.3),
+    0 0 20px rgba(200, 107, 255, 0.2);
+  backdrop-filter: blur(8px);
+  transform: rotateZ(var(--rot)) rotateX(18deg) rotateY(-8deg) scale(var(--scale));
+  transition: --scale 0.3s ease;
+}
+
+.work__comingsoon:hover .spinner {
+  --scale: 1.05;
+  box-shadow:
+    0 0 15px rgba(94, 240, 255, 0.6),
+    0 0 35px rgba(200, 107, 255, 0.4);
+}
+
+@keyframes spin {
+  from {
+    --rot: 0deg;
+  }
+
+  to {
+    --rot: 360deg;
+  }
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  -webkit-mask: radial-gradient(farthest-side, transparent 70%, black 71%);
+  mask: radial-gradient(farthest-side, transparent 70%, black 71%);
+}
+
+.r1 {
+  background: conic-gradient(from 120deg, #5ef0ff, #fff 25%, transparent 55%);
+  transform: translateZ(10px) scale(1.06);
+}
+
+.r2 {
+  background: conic-gradient(from -40deg, #c86bff, #fff 18%, transparent 45%);
+  transform: scale(0.9);
+  mix-blend-mode: screen;
+}
+
+.r3 {
+  background: conic-gradient(from 200deg, #fff 15%, #5ef0ff 40%, #c86bff 65%);
+  transform: translateZ(-6px) scale(0.74);
+  opacity: 0.9;
+}
+
+.core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) translateZ(12px);
+  width: 52%;
+  height: 52%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.4) 25%, rgba(255, 255, 255, 0.02) 60%);
+}
+
+.work__comingsoon:hover .label {
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(255, 255, 255, 0.8),
+    0 0 25px rgba(94, 240, 255, 0.75),
+    0 0 45px rgba(200, 107, 255, 0.55);
+  transform: scale(1.05);
+}
+
+/* Coming Soon text */
+.label {
+  margin-top: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(94, 240, 255, 0.65) 50%,
+      rgba(200, 107, 255, 0.55) 100%);
+  /* -webkit-background-clip: text; */
+  -webkit-text-fill-color: var(--text-color);
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(94, 240, 255, 0.4),
+    0 0 20px rgba(200, 107, 255, 0.25);
+  transition: all 0.3s ease;
+}
+
+/* حالت سه‌بعدی و درخشان هنگام هاور */
+.label:hover {
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.5),
+    0 0 12px rgba(255, 255, 255, 0.8),
+    0 0 25px rgba(94, 240, 255, 0.75),
+    0 0 45px rgba(200, 107, 255, 0.55);
+  transform: scale(1.05);
+}
+
+.neon {
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.9),
+    0 0 18px rgba(94, 240, 255, 0.45),
+    0 0 30px rgba(200, 107, 255, 0.25);
+  animation: flicker 3s linear infinite;
+}
+
+/* استایل اسپینر کوچک داخل دکمه */
+/* حالت عادی دکمه */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* فاصله بین اسپینر و متن */
+  position: relative;
+}
+
+/* حالت در حال بارگذاری */
+.button.loading {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* اسپینر هماهنگ با تم (اینجا سفید فرض شده، می‌تونی تغییر بدی) */
+.button.loading::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  /* رنگ اسپینر */
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ساختار کلی فیلدها */
+.input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.contact__input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+  background: transparent;
+  color: var(--text-color);
+  transition: border-color 0.3s ease;
+}
+
+/* حالت خطا: بوردر قرمز + لرزش هنگام کلیک روی Submit با فیلد خالی */
+.contact__input.input-error {
+  border-color: #e53935;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+.contact__input.shake {
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  color: var(--text-muted);
+  font-size: 1rem;
+  background: var(--bg-color);
+  padding: 0 4px;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+/* وقتی کاربر درون باکس کلیک می‌کند یا مقدار دارد */
+.contact__input:focus+label,
+.contact__input:not(:placeholder-shown)+label {
+  top: -10px;
+  left: 10px;
+  font-size: 0.8rem;
+  color: #2196f3;
+  /* رنگ آبی تم */
+}
+
+/* پیام خطا زیر هر فیلد (در فضای margin-bottom گروه)؛ قبلاً داخل خود فیلد می‌نشست و روی متن واردشده
+   (مثلاً ایمیل نامعتبر یا پیام کوتاه) می‌افتاد */
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 5px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+/* ظاهر شدن نرم پیام خطا (به‌جای ظاهر شدن یهویی) */
+.error-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* انیمیشن چرخش */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes flicker {
+
+  0%,
+  19%,
+  21%,
+  23%,
+  100% {
+    opacity: 1;
+  }
+
+  20%,
+  22% {
+    opacity: 0.8;
+  }
+}
+
+/* بلند شدن نرم دکمه‌های flag-button (Call Me، شبکه‌های اجتماعی، ارسال پیام، لینک‌های منو و ...) */
+.flag-button {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+/* دسکتاپ: هاور/فشردن واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .flag-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+
+  .flag-button:active {
+    transform: translateY(-6px);
+    transition-duration: 0.15s;
+  }
+}
+
+/* موبایل: به‌جای :hover/:active (که روی لمس - مخصوصاً وقتی لمس باعث خروج از صفحه بشه، مثل دکمه‌ی تماس -
+   "گیر" می‌کنن)، این بالا رفتن با کلاس is-pressed از pointerdown/pointerup در main.js کنترل می‌شه
+   و با رها شدن لمس یا برگشتن به صفحه همیشه درست پاک می‌شه */
+@media screen and (max-width: 767px) {
+  .flag-button.is-pressed {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+    transition-duration: 0.15s;
+  }
+}
+
+/* ==================== زبان (فارسی/انگلیسی) ==================== */
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: var(--font-semi);
+  color: var(--text-color);
+  background-color: transparent;
+  border: 1.5px solid var(--text-color);
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
+}
+
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .lang-toggle:hover {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* موبایل: به‌جای :hover (که روی لمس گیر می‌کنه)، کلاس is-pressed از main.js کنترل می‌شه */
+@media screen and (max-width: 767px) {
+  .lang-toggle.is-pressed {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* بج کوچیک کد زبان (EN/FA) که پشت عنوان زبان مقصد میاد */
+.lang-toggle__badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.7rem;
+  /* تیره‌تر از --first-color تا کنتراست متن سفید روش به حداقل ۴.۵:۱ برسه (این رنگ فقط مال همین بج کوچیکه) */
+  background-color: hsl(var(--hue-color), 89%, 50%);
+  color: #fff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@media screen and (min-width: 768px) {
+  .lang-toggle:hover .lang-toggle__badge {
+    background-color: #fff;
+    color: var(--first-color);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .lang-toggle.is-pressed .lang-toggle__badge {
+    background-color: #fff;
+    color: var(--first-color);
+  }
+}
+
+/* ==================== دانلود رزومه ==================== */
+/* موبایل: فقط آیکون، دایره‌ای هم‌قواره با دکمه‌ی تم؛ دسکتاپ: چیپ کامل با متن */
+.resume-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: var(--font-semi);
+  color: var(--text-color);
+  background-color: transparent;
+  border: 1.5px solid var(--text-color);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
+}
+
+.resume-download span {
+  display: none;
+}
+
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .resume-download:hover {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* موبایل: به‌جای :hover (که روی لمس گیر می‌کنه)، کلاس is-pressed از main.js کنترل می‌شه */
+@media screen and (max-width: 767px) {
+  .resume-download.is-pressed {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .resume-download {
+    width: auto;
+    height: auto;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    border-radius: 2rem;
+  }
+
+  .resume-download span {
+    display: inline;
+  }
+}
+
+/* ==================== تم (روشن/تاریک) ==================== */
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  background-color: transparent;
+  border: 1.5px solid var(--text-color);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
+}
+
+/* دسکتاپ: هاور واقعی ماوس دقیقاً مثل قبل */
+@media screen and (min-width: 768px) {
+  .theme-toggle:hover {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* موبایل: به‌جای :hover (که روی لمس گیر می‌کنه)، کلاس is-pressed از main.js کنترل می‌شه */
+@media screen and (max-width: 767px) {
+  .theme-toggle.is-pressed {
+    color: #fff;
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+}
+
+/* چرخش فقط روی آیکون داخل دکمه اجرا می‌شه، نه کل دکمه؛ وگرنه tooltip (که pseudo-element خود دکمه‌ست) هم کج می‌شد */
+.theme-toggle i {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media screen and (min-width: 768px) {
+  .theme-toggle:hover i {
+    transform: rotate(20deg);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .theme-toggle.is-pressed i {
+    transform: rotate(20deg);
+  }
+}
+
+/* Tooltip دکمه‌ی تم: متنش با data-tooltip از main.js تنظیم و متناسب با تم/زبان فعلی به‌روز می‌شه */
+.theme-toggle::before,
+.theme-toggle::after {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+  z-index: var(--z-fixed);
+}
+
+.theme-toggle::before {
+  content: '';
+  margin-top: 4px;
+  border: 5px solid transparent;
+  border-top-width: 0;
+  border-bottom-color: var(--second-color);
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.theme-toggle::after {
+  content: attr(data-tooltip);
+  margin-top: 9px;
+  transform: translateX(-50%) translateY(-4px);
+  white-space: nowrap;
+  background-color: var(--second-color);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.4rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* تولتیپ فقط با فوکوس کیبورد همیشه نشون داده می‌شه؛ نسخه‌ی هاور پایین‌تر و فقط برای دسکتاپه
+   (تا رو موبایل بعد از لمس گیر نکنه و باز نمونه) */
+.theme-toggle:focus-visible::before,
+.theme-toggle:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media screen and (min-width: 768px) {
+  .theme-toggle:hover::before,
+  .theme-toggle:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* در حالت موبایل، دکمه‌های زبان/تم رو کنار آیکون همبرگری نشون می‌دیم */
+@media screen and (max-width: 767px) {
+  .nav__actions {
+    order: 2;
+  }
+  .nav__toggle {
+    order: 3;
+  }
+}
+
+/* ==================== پشتیبانی راست‌به‌چپ (فارسی) ==================== */
+html[dir="rtl"] {
+  --body-font: "Vazirmatn", "Poppins", sans-serif;
+}
+
+html[dir="rtl"] body {
+  letter-spacing: 0;
+}
+
+/* منوی موبایل: از چپ باز می‌شه به‌جای راست */
+@media screen and (max-width: 767px) {
+  html[dir="rtl"] .nav__menu {
+    right: auto;
+    left: 0;
+    transform: translateX(-100%);
+    box-shadow: 30px 0 36px -28px rgba(0, 0, 0, 0.5);
+  }
+  html[dir="rtl"] .nav__menu.show {
+    transform: translateX(0);
+  }
+}
+
+/* عکس پروفایل هیرو: سمت چپ به‌جای راست */
+html[dir="rtl"] .home__img {
+  right: auto;
+  left: 0;
+}
+
+/* فاصله‌ی آیکون‌های شبکه‌ی اجتماعی: از سمت چپ */
+html[dir="rtl"] .home__social-icon {
+  margin-right: 0;
+  margin-left: var(--mb-2);
+}
+
+@media screen and (min-width: 576px) {
+  html[dir="rtl"] .home__social-icon {
+    margin-right: 0;
+    margin-left: var(--mb-4);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  html[dir="rtl"] .home__social-icon {
+    margin-left: var(--mb-2);
+  }
+}
+
+/* چیدمان متن مهارت‌ها: راست‌چین */
+html[dir="rtl"] .skills__container {
+  text-align: right;
+}
+
+/* لیبل شناور فرم تماس: از سمت راست ورودی */
+html[dir="rtl"] .input-group label {
+  left: auto;
+  right: 12px;
+}
+
+html[dir="rtl"] .contact__input:focus + label,
+html[dir="rtl"] .contact__input:not(:placeholder-shown) + label {
+  left: auto;
+  right: 10px;
+}
+
+/* پیام خطای فرم: زیر سمت راست ورودی */
+html[dir="rtl"] .error-message {
+  left: auto;
+  right: 5px;
+}
+
+/* دکمه‌ی بستن پاپ‌آپ: بالا-چپ به‌جای بالا-راست */
+html[dir="rtl"] .popup__close {
+  right: auto;
+  left: 1rem;
+}
+
+/* ==================== تم تاریک ==================== */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-color: #0f1720;
+  --surface-color: #182231;
+  --text-color: #e8ecf1;
+  --text-muted: #92a0b3;
+  --border-color: #33404f;
+  --track-color: #2a3444;
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --header-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* اسکرول‌بار و متن انتخاب‌شده هماهنگ با تم تاریک (اکثر مرورگرها با color-scheme خودکار انجامش می‌دن،
+   این فقط برای فایرفاکس/موارد قدیمی‌تره) */
+html[data-theme="dark"] ::selection {
+  background: var(--first-color);
+  color: #fff;
+}
+
+/* روی تم تاریک، پس‌زمینه‌ی پاپ‌آپ کمی روشن‌تر از بک‌گراند صفحه‌ست، پس یه بوردر ظریف هم اضافه می‌کنیم */
+html[data-theme="dark"] .popup__content {
+  border: 1px solid var(--border-color);
+}
+
+/* ==================== انیمیشن دایره‌ای تعویض تم (View Transitions API) ====================
+   جلوگیری از فِیدِ پیش‌فرض مرورگر، تا فقط انیمیشن دایره‌ای که در main.js تعریف شده اجرا بشه */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+/* ==================== Toast (جایگزین SweetAlert2 برای پیام‌های موفقیت/خطای فرم تماس) ==================== */
+.toast-container {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  z-index: var(--z-fixed);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: min(380px, calc(100% - 2rem));
+  pointer-events: none;
+}
+
+.toast {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.7rem;
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  box-shadow: var(--card-shadow);
+  /* با border-inline-start به‌جای left/right، خط رنگی خودکار سمت درست (راست در RTL، چپ در LTR) نمایش داده می‌شه */
+  border-inline-start: 4px solid var(--first-color);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(16px) scale(0.97);
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.toast--success {
+  border-inline-start-color: #2e7d32;
+}
+
+.toast--error {
+  border-inline-start-color: #e53935;
+}
+
+.toast__icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+}
+
+.toast--success .toast__icon {
+  color: #2e7d32;
+}
+
+.toast--error .toast__icon {
+  color: #e53935;
+}
+
+.toast__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast__title {
+  font-weight: var(--font-semi);
+  font-size: 0.95rem;
+  margin: 0 0 0.15rem;
+}
+
+.toast__text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.toast__close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.toast__close:hover {
+  color: var(--text-color);
+}
+
+@media screen and (max-width: 400px) {
+  .toast-container {
+    bottom: 1rem;
+  }
+}
+
+/* ==================== HERO: زیرعنوان + ردیف دکمه‌ها ==================== */
+/* margin-top منفی، فاصله‌ی زیر h1 (--mb-5) رو جمع می‌کنه تا زیرعنوان نزدیک‌تر به عنوان بشینه (margin ها با هم ترکیب می‌شن) */
+.home__subtitle {
+  max-width: 28rem;
+  margin: -1.5rem 0 var(--mb-4);
+  line-height: 1.9;
+  color: var(--text-color);
+  opacity: 0.85;
+}
+
+.home__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media screen and (max-width: 767px) {
+  .home__subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .home__cta {
+    justify-content: center;
+  }
+}
+
+/* ==================== دکمه‌ی خطی (بدون پس‌زمینه؛ با هاور پر می‌شه) ==================== */
+/* رنگ هاور عمداً سبزآبی است، نه آبی اصلی: هاور دکمه‌ی پُر «تماس با من» هم آبیِ پر بود و کنار هم قاطی می‌شدند.
+   رنگ‌ها اینجا متغیرند تا عوض کردنشان یک‌جا باشد */
+.btn-outline,
+.nav__cta {
+  --btn-accent: hsl(172, 72%, 30%);
+  --btn-accent-shadow: hsla(172, 72%, 42%, 0.55);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--first-color);
+}
+
+/* ترنزیشن flag-button رنگ بوردر نداره؛ اضافه‌اش می‌کنیم تا بوردر هم نرم عوض بشه (مدت‌ها همون‌هایی می‌مونن که flag-button گذاشته) */
+.btn-outline.flag-button {
+  transition-property: transform, box-shadow, background-color, color, border-color;
+}
+
+/* دسکتاپ: هاور واقعی ماوس */
+@media screen and (min-width: 768px) {
+  .btn-outline:hover {
+    background-color: var(--btn-accent);
+    border-color: var(--btn-accent);
+    color: #fff;
+  }
+
+  .btn-outline.flag-button:hover {
+    box-shadow: 0 16px 28px -12px var(--btn-accent-shadow);
+  }
+}
+
+/* موبایل: مثل بقیه‌ی دکمه‌ها، به‌جای :hover از کلاس is-pressed (که main.js کنترل می‌کنه) استفاده می‌شه */
+@media screen and (max-width: 767px) {
+  .btn-outline.is-pressed {
+    background-color: var(--btn-accent);
+    border-color: var(--btn-accent);
+    color: #fff;
+    box-shadow: 0 16px 28px -12px var(--btn-accent-shadow);
+  }
+}
+
+/* ==================== دکمه‌ی «دریافت قیمت» ====================
+   عمداً با دکمه‌ی «مشاوره رایگان» (خطی ← سبزآبی) فرق دارد، هم قبل و هم بعد از هاور:
+   قبل از هاور یک زمینه‌ی آبیِ مشخص با بوردر روشن دارد (نه خطی)، و با هاور آبیِ پُرِ برند می‌شود (نه سبزآبی) */
+.btn-quote {
+  --quote-text: hsl(var(--hue-color), 80%, 30%);
+  --quote-border: hsla(var(--hue-color), 80%, 45%, 0.9);
+  background-color: hsla(var(--hue-color), 89%, 60%, 0.32);
+  border-color: var(--quote-border);
+  color: var(--quote-text);
+}
+
+/* رنگ متن و بوردرِ تم تاریک از طریق متغیر عوض می‌شود (نه با خودِ color/border-color)، تا قاعده‌ی هاور/فشردن را بی‌اثر نکند */
+html[data-theme="dark"] .btn-quote {
+  --quote-text: #fff;
+  --quote-border: hsla(var(--hue-color), 89%, 72%, 0.85);
+}
+
+/* flag-button بوردر را ترنزیشن نمی‌دهد؛ اضافه‌اش می‌کنیم تا بوردر هم نرم عوض شود */
+.btn-quote.flag-button {
+  transition-property: transform, box-shadow, background-color, color, border-color;
+}
+
+@media screen and (min-width: 768px) {
+  .btn-quote:hover {
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    color: #fff;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .btn-quote.is-pressed {
+    background-color: var(--first-color);
+    border-color: var(--first-color);
+    color: #fff;
+  }
+}
+
+/* ==================== خدمات (Services) ==================== */
+/* عرض ۱۰۲۴ همان عرض شبکه‌ی کارت‌های خدمات است؛ جمله روی دسکتاپ در یک خط جا می‌شود و در عرض‌های کم خودش می‌شکند */
+.services__intro {
+  max-width: 1024px;
+  margin: 0 auto var(--mb-4);
+  padding: 0 var(--mb-2);
+  text-align: center;
+  line-height: 1.9;
+  color: var(--text-color);
+  opacity: 0.85;
+}
+
+/* یادداشت پشتیبانی پس از تحویل: کارت با آیکون کنار متن (آیکون همان services__icon کارت‌های خدمات است) */
+.services__note {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  /* کنار هر دو طرف حاشیه‌ی ثابت می‌ماند و از ۱۰۲۴ بزرگ‌تر نمی‌شود (هم‌عرض شبکه‌ی کارت‌های بالا) */
+  width: calc(100% - 2 * var(--mb-2));
+  max-width: 1024px;
+  margin: var(--mb-4) auto 0;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--surface-color);
+  border-radius: 0.75rem;
+  box-shadow: var(--card-shadow);
+}
+
+.services__note .services__icon {
+  flex-shrink: 0;
+}
+
+.services__note-text {
+  margin: 0;
+  line-height: 1.9;
+  color: var(--text-color);
+}
+
+html[data-theme="dark"] .services__note {
+  border: 1px solid var(--border-color);
+}
+
+.services__container {
+  grid-template-columns: 1fr;
+  row-gap: 1.5rem;
+  /* کارت‌ها با ارتفاع برابر کنار هم قرار می‌گیرن */
+  align-items: stretch;
+}
+
+.services__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background-color: var(--surface-color);
+  border-radius: 0.75rem;
+  box-shadow: var(--card-shadow);
+  /* بدون important: تا انیمیشن ورود ScrollReveal دست‌نخورده بمونه */
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* بعد از تمام شدن انیمیشن ورود (main.js کلاس is-revealed رو اضافه می‌کنه)، ترنزیشن سریع هاور قطعی می‌شه
+   (دقیقاً مثل کارت‌های مهارت‌ها و نمونه‌کارها) */
+.services__card.is-revealed {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.services__card:hover {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  transform: translateY(-10px) !important;
+  box-shadow:
+    0 22px 32px -16px hsla(var(--hue-color), 89%, 60%, 0.35),
+    0 8px 16px -8px rgba(14, 36, 49, 0.2) !important;
+}
+
+html[data-theme="dark"] .services__card {
+  border: 1px solid var(--border-color);
+}
+
+.services__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.6rem;
+  border-radius: 0.75rem;
+  background-color: hsla(var(--hue-color), 89%, 60%, 0.12);
+  color: var(--first-color);
+}
+
+.services__title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.services__desc {
+  line-height: 1.8;
+  opacity: 0.85;
+}
+
+/* flex: 1 باعث می‌شه زمان تحویل و دکمه‌ی هر کارت، پایین کارت و هم‌تراز با کارت‌های کناری بمونن */
+.services__features {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.services__features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: var(--smaller-font-size);
+  line-height: 1.6;
+}
+
+.services__features li::before {
+  content: '\2713';
+  flex-shrink: 0;
+  color: var(--first-color);
+  font-weight: 700;
+}
+
+.services__time {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--smaller-font-size);
+  opacity: 0.75;
+}
+
+.services__card .btn {
+  width: 100%;
+  padding: 0.65rem 1.25rem;
+}
+
+@media screen and (min-width: 768px) {
+  .services__container {
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 1.5rem;
+  }
+}
+
+/* با اضافه شدن آیتم «خدمات»، منوی دسکتاپ در عرض‌های کم (۷۶۸ تا ۹۹۱) سرریز می‌کرد (قبل از این هم در ۷۶۸ تا ۸۰۰ سرریز داشت)؛
+   پس در این بازه آیکون لینک‌ها مخفی و فاصله‌ها فشرده‌تر می‌شه. از ۹۹۲ به بالا همون چیدمان قبلی (با آیکون) برقراره */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  /* .nav__link جلوش هست چون boxicons.min.css بعد از این فایل لود می‌شه و .bx{display:inline-block} با specificity برابر برنده می‌شد */
+  .nav__link .nav__link-icon {
+    display: none;
+  }
+
+  .resume-download {
+    white-space: nowrap;
+  }
+
+  .nav__item {
+    margin-left: 1rem;
+  }
+
+  .nav__actions {
+    gap: 0.4rem;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 820px) {
+  .nav__item {
+    margin-left: 0.7rem;
+  }
+}
+
+/* ==================== خدمات: «مناسب برای»، مراحل همکاری و سوالات متداول ==================== */
+.services__for {
+  font-size: var(--smaller-font-size);
+  line-height: 1.7;
+  opacity: 0.8;
+}
+
+.services__subtitle {
+  margin: var(--mb-6) 0 var(--mb-4);
+  text-align: center;
+  font-size: 1.25rem;
+}
+
+.process {
+  list-style: none;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  grid-template-columns: 1fr;
+  row-gap: 1.25rem;
+  align-items: stretch;
+}
+
+.process__step {
+  padding: 1.25rem;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+}
+
+/* سفیدِ روی این آبی (کمی تیره‌تر از --first-color) به کنتراست خوانایی می‌رسه */
+.process__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-bottom: 0.75rem;
+  border-radius: 50%;
+  background-color: hsl(var(--hue-color), 89%, 50%);
+  color: #fff;
+  font-weight: var(--font-semi);
+}
+
+.process__title {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.process__desc {
+  margin: 0;
+  font-size: var(--smaller-font-size);
+  line-height: 1.8;
+  opacity: 0.85;
+}
+
+.faq {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 var(--mb-2);
+}
+
+.faq__item {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease;
+}
+
+/* بعد از تمام شدن انیمیشن ورود (main.js کلاس is-revealed را می‌گذارد)، ترنزیشن ScrollReveal کنار می‌رود تا بالا رفتن و برگشتن هاور هر دو نرم و سریع باشند
+   (!important چون ScrollReveal خودش transform/transition را inline می‌گذارد؛ مثل کارت‌های خدمات) */
+.faq__item.is-revealed {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s ease !important;
+}
+
+/* بلند شدن نرم هنگام هاور؛ فقط برای ماوس واقعی، تا روی لمس حالت چسبیده نداشته باشیم */
+@media (hover: hover) and (pointer: fine) {
+  .faq__item:hover {
+    transform: translateY(-4px) !important;
+    border-color: hsla(var(--hue-color), 89%, 60%, 0.55);
+    box-shadow: 0 16px 26px -16px hsla(var(--hue-color), 89%, 60%, 0.4);
+  }
+}
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: var(--font-semi);
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+
+/* فلش با border فیزیکی (راست و پایین) ساخته می‌شود، نه logical؛ با logical در حالت راست‌به‌چپ به‌جای «پایین» به چپ اشاره می‌کرد.
+   بسته: رو به پایین. باز (کلاس is-open از main.js، هم‌زمان با شروع انیمیشن): نرم به سمت بالا می‌چرخد.
+   translateY جایگاه دیداری فلش را بین دو حالت ثابت نگه می‌دارد (رأس V بالا یا پایین باشد، مرکز دیداری جابه‌جا می‌شود) */
+.faq__q::after {
+  content: '';
+  flex-shrink: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid var(--first-color);
+  border-bottom: 2px solid var(--first-color);
+  transform: translateY(-0.15rem) rotate(45deg);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq__item.is-open .faq__q::after {
+  transform: translateY(0.15rem) rotate(-135deg);
+}
+
+.faq__q:focus-visible {
+  outline: 2px solid var(--first-color);
+  outline-offset: 2px;
+}
+
+/* ارتفاع این پنل در main.js با Web Animations انیمیت می‌شود؛ overflow برای بریده شدن جواب هنگام کوچک شدن لازم است */
+.faq__panel {
+  overflow: hidden;
+}
+
+.faq__a {
+  margin: 0;
+  padding: 0 1.25rem 1.1rem;
+  line-height: 1.9;
+  opacity: 0.85;
+}
+
+@media screen and (min-width: 768px) {
+  .process {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .process {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ==================== بنر دعوت به اقدام (بالای بخش «ارتباط با من»، داخل خود همان بخش) ==================== */
+.cta-band {
+  margin-bottom: 3rem;
+}
+
+/* دکمه‌های مشاوره/قیمت مستقیم به فرم می‌روند؛ این فاصله جلوی رفتن بالای فرم زیر هدر ثابت را می‌گیرد */
+#contactForm {
+  scroll-margin-top: calc(var(--header-height) + 2.5rem);
+}
+
+.cta-band__inner {
+  justify-items: center;
+  gap: 1rem;
+  padding: 2.5rem 1.5rem;
+  border-radius: 1rem;
+  /* کمی تیره‌تر از قبل (۴۰٪ → ۳۲٪): دکمه‌ی «دریافت قیمت» همان استایل کارت‌های خدمات را دارد (آبیِ کم‌رنگ) و روی آبیِ روشن‌تر گم می‌شد */
+  background-color: hsl(var(--hue-color), 80%, 32%);
+  color: #fff;
+  text-align: center;
+}
+
+.cta-band__title {
+  margin: 0;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: #fff;
+}
+
+.cta-band__text {
+  /* تا جایی که عرض بنر اجازه می‌دهد در یک خط می‌ماند؛ روی عرض‌های کم که ناچار می‌شکند، balance جلوی کلمه‌ی تنها در خط دوم را می‌گیرد */
+  max-width: 100%;
+  margin: 0;
+  line-height: 1.9;
+  opacity: 0.92;
+  text-wrap: balance;
+}
+
+.cta-band__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* دو دکمه‌ی بنر عیناً همان دکمه‌های بقیه‌ی سایت‌اند (قاعده‌ی سراسریِ .btn-outline و .btn-quote)، پس رنگشان قبل و بعد از هاور با
+   جاهای دیگر یکی است. تنها استثنا: روی زمینه‌ی آبیِ بنر «مشاوره رایگان» باید سفید باشد (خطیِ سفید ← سبزآبی)، و متن «دریافت قیمت» در
+   تم روشن هم باید همان رنگِ روشنِ تم تاریک باشد وگرنه روی آبی خوانده نمی‌شود */
+.cta-band .btn.btn-outline {
+  background-color: transparent;
+  border-color: #fff;
+  color: #fff;
+}
+
+.cta-band .btn-quote {
+  --quote-text: #fff;
+  --quote-border: hsla(var(--hue-color), 89%, 72%, 0.85);
+}
+
+@media screen and (min-width: 768px) {
+  .cta-band .btn.btn-outline:hover {
+    background-color: var(--btn-accent);
+    border-color: var(--btn-accent);
+    color: #fff;
+    box-shadow: 0 16px 28px -12px var(--btn-accent-shadow);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .cta-band .btn.btn-outline.is-pressed {
+    background-color: var(--btn-accent);
+    border-color: var(--btn-accent);
+    color: #fff;
+    box-shadow: 0 16px 28px -12px var(--btn-accent-shadow);
+  }
+}
+
+/* ==================== فرم تماس: درخواست مشاوره/قیمت ==================== */
+.contact__lead {
+  max-width: 640px;
+  margin: 0 auto var(--mb-2);
+  padding: 0 var(--mb-2);
+  text-align: center;
+  line-height: 1.9;
+  opacity: 0.85;
+}
+
+.contact__form {
+  width: min(100%, 460px);
+}
+
+.field {
+  margin-bottom: 1.5rem;
+}
+
+.field__label {
+  display: block;
+  padding: 0;
+  margin-bottom: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  border: 0;
+}
+
+.chips legend {
+  width: 100%;
+}
+
+/* آیکون کنار عنوان گروه‌ها */
+.field__label-icon {
+  margin-inline-end: 0.4rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  vertical-align: -0.2em;
+  color: var(--first-color);
+}
+
+.chip {
+  position: relative;
+  cursor: pointer;
+}
+
+.chip input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.chip__face {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.chip__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.chip input:checked + .chip__face {
+  background-color: hsl(var(--hue-color), 89%, 50%);
+  border-color: hsl(var(--hue-color), 89%, 50%);
+  color: #fff;
+}
+
+.chip input:focus-visible + .chip__face {
+  outline: 2px solid var(--first-color);
+  outline-offset: 2px;
+}
+
+/* بلند شدن دکمه‌های انتخاب، دقیقاً مثل بقیه‌ی flag-button ها؛ اینجا خودِ .chip__face بالا می‌ره (نه label که input شفاف رویش
+   افتاده)، تا ناحیه‌ی هاور ثابت بمونه و لبه‌ی پایین دکمه حین بالا رفتن لرزش نکنه */
+@media screen and (min-width: 768px) {
+  .chip:hover .chip__face {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+  }
+
+  .chip:active .chip__face {
+    transform: translateY(-6px);
+    transition-duration: 0.15s;
+  }
+}
+
+/* موبایل: مثل بقیه‌ی دکمه‌ها با کلاس is-pressed (main.js) به‌جای :hover که روی لمس گیر می‌کنه */
+@media screen and (max-width: 767px) {
+  .chip.is-pressed .chip__face {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 28px -12px hsla(var(--hue-color), 89%, 60%, 0.5);
+    transition-duration: 0.15s;
+  }
+}
+
+.contact__select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+  background-color: transparent;
+  color: var(--text-color);
+  transition: border-color 0.3s ease;
+}
+
+.contact__select:focus {
+  border-color: var(--first-color);
+}
+
+.contact__select option {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+}
+
+.consult-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 1rem;
+}
+
+/* عنوان کلیِ «روز و ساعت»: بالای هر دو ستون (هم‌سبک با عنوان‌های «نوع درخواست» و «ترجیح می‌دهم از این راه...») */
+.consult-fields > .consult-fields__title {
+  grid-column: 1 / -1;
+  margin-bottom: 0.75rem;
+}
+
+.consult-fields[hidden] {
+  display: none;
+}
+
+.contact__direct {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* عنوان همیشه یک خطِ جدا و وسط‌چین است (جمله بلند است و کنار دو دکمه جا نمی‌شود)، با آیکون آبیِ هم‌خانواده‌ی عنوان‌های فرم */
+.contact__direct-text {
+  display: flex;
+  flex: 0 0 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin: 0;
+  text-align: center;
+}
+
+.contact__direct-text i {
+  flex-shrink: 0;
+  color: var(--first-color);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* دکمه‌های تلگرام و تماس تلفنی همان ظاهر چیپ‌های «روش تماس» را دارند؛ بلند شدن با هاور از کلاس flag-button می‌آید
+   (در موبایل با is-pressed) و آیکون‌هایشان همان انیمیشن چیپ‌ها را (بلوک «آیکون‌های متحرک» پایین‌تر) */
+.contact__direct-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 2rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.contact__direct-link i {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* ==================== درباره من: دعوت به مشاوره ==================== */
+.about__text + .about__text {
+  margin-top: var(--mb-2);
+}
+
+.about__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+  margin-top: var(--mb-4);
+}
+
+/* ردیف دعوت به مشاوره یک container است تا اندازه‌ی فونت جمله به عرضِ واقعیِ همین ستون وابسته باشد (cqi = ۱٪ عرض ردیف) */
+.about__actions {
+  container-type: inline-size;
+}
+
+.about__cta-text {
+  margin: 0;
+  font-weight: var(--font-semi);
+  font-size: 1rem;
+  /* جمله‌ی بلند فقط وقتی ناچار باشد دو خطی می‌شود؛ با balance آخرین خط یک کلمه‌ی تنها نمی‌ماند */
+  text-wrap: balance;
+}
+
+/* فونت جمله فقط به‌اندازه‌ای کوچک می‌شود که در عرض ستون در یک خط جا شود (حداکثر ۱rem، حداقل ۰.۸rem).
+   ضریب‌ها از طول واقعی جمله‌اند: فارسی ≈ ۳۵.۳۵em و انگلیسی ≈ ۴۲.۰۷em؛ ۱۰۰ ÷ طول، با ۲٪ حاشیه‌ی اطمینان.
+   اگر کادر آن‌قدر باریک است که حتی با فونت حداقل هم یک خط نمی‌شود (موبایل)، اندازه‌ی عادی و دو خط متعادل می‌ماند */
+.about__cta-text {
+  font-size: clamp(0.8rem, 2.77cqi, 1rem);
+}
+
+html[lang="en"] .about__cta-text {
+  font-size: clamp(0.75rem, 2.33cqi, 1rem);
+}
+
+@container (max-width: 455px) {
+  .about__cta-text {
+    font-size: 1rem;
+  }
+}
+
+@container (max-width: 510px) {
+  html[lang="en"] .about__cta-text {
+    font-size: 1rem;
+  }
+}
+
+/* ==================== هدر: دکمه‌ی ثابت «مشاوره رایگان» ==================== */
+/* پیش‌فرض (موبایل‌های باریک و تبلت): فقط دایره‌ی آیکون‌دار هم‌قواره با دکمه‌های تم/رزومه؛ متن برای صفحه‌خوان می‌مونه */
+.nav__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: var(--font-semi);
+  white-space: nowrap;
+  color: var(--text-color);
+  background-color: transparent;
+  border: 1.5px solid var(--text-color);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease;
+}
+
+.nav__cta i {
+  font-size: 1.1rem;
+}
+
+.nav__cta span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media screen and (min-width: 768px) {
+  .nav__cta:hover {
+    background-color: var(--btn-accent);
+    border-color: var(--btn-accent);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px var(--btn-accent-shadow);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .nav__cta.is-pressed {
+    background-color: var(--btn-accent);
+    border-color: var(--btn-accent);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 18px -10px var(--btn-accent-shadow);
+  }
+}
+
+/* جا هست: چیپ کامل با متن (موبایل‌های عریض‌تر و از ۱۱۰۰ به بالا؛ متن انگلیسی بلندتره و زیر ۱۱۰۰ جا نمی‌شه) */
+@media screen and (min-width: 480px) and (max-width: 767px), screen and (min-width: 1100px) {
+  .nav__cta {
+    width: auto;
+    height: auto;
+    padding: 0.35rem 0.9rem;
+    border-radius: 2rem;
+  }
+
+  .nav__cta span {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+}
+
+/* با اضافه شدن دکمه‌ی مشاوره، هدر دسکتاپ جای رزومه‌ی متنی رو نداره (به‌خصوص در حالت انگلیسی): رزومه از ۷۶۸ به بالا فقط آیکون می‌شه
+   (متن و tooltip‌ش از main.js می‌آد). آیکون لینک‌های منو هم تا قبل از ۱۲۳۲ مخفی می‌مونه؛ نوار هدر از ۱۲۳۲ به بالا ثابت ۱۲۰۰ پیکسله */
+@media screen and (min-width: 768px) {
+  .nav > div:first-child {
+    flex-shrink: 0;
+  }
+
+  .resume-download {
+    width: 2.2rem;
+    height: 2.2rem;
+    padding: 0;
+    font-size: 1rem;
+    border-radius: 50%;
+  }
+
+  .resume-download span {
+    display: none;
+  }
+}
+
+/* تبلت‌های باریک: منوی انگلیسی (متن بلندتر) با دکمه‌ی مشاوره جا نمی‌شد؛ لینک‌ها کمی کوچک‌تر و فشرده‌تر می‌شن */
+@media screen and (min-width: 768px) and (max-width: 899px) {
+  .nav__link {
+    font-size: 0.85rem;
+  }
+
+  .nav__item {
+    margin-left: 0.6rem;
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1231px) {
+  .nav__link .nav__link-icon {
+    display: none;
+  }
+}
+
+/* گوشی‌های خیلی باریک (۳۲۰): آیکون رزومه کنار می‌ره تا دکمه‌ی مشاوره جا شود */
+@media screen and (max-width: 359px) {
+  .resume-download {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .nav__item {
+    margin-left: 1.5rem;
+  }
+
+  .resume-download {
+    white-space: nowrap;
+  }
+}
+
+/* ==================== اسکرول‌بار سفارشی (صفحه و پاپ‌آپ) ==================== */
+/* اسکرول‌بار مرورگر مخفی می‌شه (اسکرول واقعی سر جاشه)؛ نشانگر باریک اون رو main.js (createScrollbar) می‌سازه.
+   سمتش با زبان عوض می‌شه: فارسی (rtl) راست، غیر از اون (انگلیسی) چپ */
+html,
+body,
+.popup__content {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.popup__content::-webkit-scrollbar {
+  display: none;
+}
+
+/* قفل اسکرول صفحه‌ی اصلی وقتی پاپ‌آپ بازه (body.style.overflow به‌تنهایی اینجا اثر نداره چون html خودش overflow-x دارد) */
+html.popup-open {
+  overflow: hidden;
+}
+
+.cscroll {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: calc(var(--z-fixed) + 1);
+  display: none;
+  width: 14px;
+  transition: opacity 0.3s ease;
+}
+
+html[dir="rtl"] .cscroll {
+  left: auto;
+  right: 0;
+}
+
+.cscroll.is-scrollable {
+  display: block;
+}
+
+/* اسکرول‌بار پاپ‌آپ داخل خود پنجره (کمی از لبه‌ی بالا/پایین فاصله دارد تا گوشه‌های گرد رو نپوشونه) */
+.popup__window > .cscroll {
+  position: absolute;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 2;
+}
+
+/* اسکرول‌بار صفحه زیر پاپ‌آپ و کنار سایدبار موبایل دیده نشه */
+html.popup-open .cscroll--page,
+html.menu-open .cscroll--page {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cscroll__thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 5px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background-color: hsla(var(--hue-color), 89%, 60%, 0.55);
+  opacity: 0.7;
+  transition: width 0.2s ease, background-color 0.2s ease, opacity 0.3s ease;
+  will-change: transform;
+}
+
+.cscroll.is-scrolling .cscroll__thumb {
+  opacity: 1;
+}
+
+/* ماوس: ریل قابل‌لمس و دستگیره با هاور کمی پهن‌تر و پررنگ‌تر می‌شه */
+@media (hover: hover) and (pointer: fine) {
+  .cscroll:hover .cscroll__thumb,
+  .cscroll.is-dragging .cscroll__thumb {
+    width: 8px;
+    background-color: hsl(var(--hue-color), 89%, 60%);
+    opacity: 1;
+  }
+}
+
+/* لمس: ریل قابل‌لمس نیست (اسکرول با انگشت) و دستگیره فقط هنگام اسکرول پیدا می‌شه */
+@media (hover: none), (pointer: coarse) {
+  .cscroll {
+    pointer-events: none;
+  }
+
+  .cscroll__thumb {
+    opacity: 0;
+  }
+
+  .cscroll.is-scrolling .cscroll__thumb {
+    opacity: 0.85;
+  }
+}
+
+/* ==================== آیکون تقویمِ تیک‌دار (دکمه‌های مشاوره) ====================
+   آیکون SVG است تا تیکش با stroke-dashoffset قابل رسم شدن باشه (آیکون‌فونت این امکان رو نداره).
+   در حالت عادی تیک کامل دیده می‌شه؛ با هاور (دسکتاپ) یا is-pressed (موبایل) محو می‌شه و نرم دوباره کشیده می‌شه.
+   pathLength="1" یعنی طول مسیر برای dash همیشه ۱ حساب می‌شه، پس به اندازه‌ی واقعی مسیر وابسته نیستیم */
+.icon-check,
+.icon-quote,
+.icon-send {
+  flex-shrink: 0;
+  width: 1.3rem;
+  height: 1.3rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav__cta .icon-check {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.icon-check__tick {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+@keyframes tickDraw {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+/* دکمه‌های انتخابِ فرم (.chip) هم همین آیکون‌ها را دارند و همان انیمیشن را با هاور نشان می‌دهند */
+@media screen and (min-width: 768px) {
+  [data-request="consult"]:hover .icon-check__tick,
+  .chip:hover .icon-check__tick {
+    animation: tickDraw 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  [data-request="consult"].is-pressed .icon-check__tick,
+  .chip.is-pressed .icon-check__tick {
+    animation: tickDraw 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both;
+  }
+}
+
+/* ==================== آیکون فاکتور (دکمه‌های دریافت قیمت) ====================
+   مثل تیکِ آیکون مشاوره: در حالت عادی کامل دیده می‌شه؛ با هاور (دسکتاپ) یا is-pressed (موبایل) فاکتور کمی "جست" می‌زنه
+   و سه خطِ داخلش یکی‌یکی (پشت‌سرهم) از نو کشیده می‌شن، مثل چاپ شدن فاکتور */
+.chip__face .icon-check,
+.chip__face .icon-quote,
+.chip__face .icon-send,
+.contact__direct-link .icon-send {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.icon-quote__line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+@keyframes quotePop {
+  0% {
+    transform: scale(1) rotate(0);
+  }
+  35% {
+    transform: scale(1.14) rotate(-7deg);
+  }
+  70% {
+    transform: scale(1.06) rotate(3deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  [data-request="quote"]:hover .icon-quote,
+  .chip:hover .icon-quote {
+    animation: quotePop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  [data-request="quote"]:hover .icon-quote__line,
+  .chip:hover .icon-quote__line {
+    animation: tickDraw 0.45s cubic-bezier(0.65, 0, 0.35, 1) var(--line-delay, 0s) both;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  [data-request="quote"].is-pressed .icon-quote,
+  .chip.is-pressed .icon-quote {
+    animation: quotePop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  [data-request="quote"].is-pressed .icon-quote__line,
+  .chip.is-pressed .icon-quote__line {
+    animation: tickDraw 0.45s cubic-bezier(0.65, 0, 0.35, 1) var(--line-delay, 0s) both;
+  }
+}
+
+/* تأخیر هر خط از طریق متغیر می‌آید (نه animation-delay مستقیم) چون شورت‌هندِ animation در قاعده‌های هاور آن را صفر می‌کرد */
+.icon-quote__line--1 {
+  --line-delay: 0.15s;
+}
+
+.icon-quote__line--2 {
+  --line-delay: 0.32s;
+}
+
+.icon-quote__line--3 {
+  --line-delay: 0.49s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-request="consult"]:hover .icon-check__tick,
+  [data-request="consult"].is-pressed .icon-check__tick,
+  .chip:hover .icon-check__tick,
+  .chip.is-pressed .icon-check__tick,
+  [data-request="quote"]:hover .icon-quote,
+  [data-request="quote"].is-pressed .icon-quote,
+  .chip:hover .icon-quote,
+  .chip.is-pressed .icon-quote,
+  [data-request="quote"]:hover .icon-quote__line,
+  [data-request="quote"].is-pressed .icon-quote__line,
+  .chip:hover .icon-quote__line,
+  .chip.is-pressed .icon-quote__line {
+    animation: none !important;
+  }
+}
+
+/* ==================== آیکون‌های متحرک «روش تماس» (چیپ‌های فرم و دکمه‌های «مستقیم پیام بدهید») ====================
+   تماس تلفنی: دقیقاً همان آیکون و انیمیشنِ دکمه‌ی «تماس با من» (تب خانه): آیکون توپُر ← با هاور آیکون خطیِ phone-call که می‌لرزد (phoneWobble)
+   تلگرام: همان پرواز هواپیمای دکمه‌ی «ارسال درخواست» (flyPlane)؛ رنگ آیکون همان رنگ متن می‌ماند (روی چیپِ انتخاب‌شده آبی، آبی روی آبی دیده نمی‌شد) */
+.chip__face .icon-hover,
+.contact__direct-link .icon-hover {
+  display: none;
+}
+
+@media screen and (min-width: 768px) {
+  .chip:hover .icon-default,
+  .contact__direct-link:hover .icon-default {
+    display: none;
+  }
+
+  .chip:hover .icon-hover,
+  .contact__direct-link:hover .icon-hover {
+    display: inline-block;
+    animation: phoneWobble 0.5s infinite;
+  }
+
+  .chip:hover .icon-send,
+  .contact__direct-link:hover .icon-send {
+    animation: flyPlane 0.6s ease-in-out forwards;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .chip.is-pressed .icon-default,
+  .contact__direct-link.is-pressed .icon-default {
+    display: none;
+  }
+
+  .chip.is-pressed .icon-hover,
+  .contact__direct-link.is-pressed .icon-hover {
+    display: inline-block;
+    animation: phoneWobble 0.5s infinite;
+  }
+
+  .chip.is-pressed .icon-send,
+  .contact__direct-link.is-pressed .icon-send {
+    animation: flyPlane 0.6s ease-in-out forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip:hover .icon-hover,
+  .chip:hover .icon-send,
+  .chip.is-pressed .icon-hover,
+  .chip.is-pressed .icon-send,
+  .contact__direct-link:hover .icon-hover,
+  .contact__direct-link:hover .icon-send,
+  .contact__direct-link.is-pressed .icon-hover,
+  .contact__direct-link.is-pressed .icon-send {
+    animation: none !important;
+  }
+}
+
+/* ==================== لیست کشویی سفارشی (جایگزین ظاهر select) ====================
+   خودِ select مخفی می‌ماند و مقدار فرم را نگه می‌دارد؛ این بخش فقط ظاهر و انیمیشن است */
+.cselect {
+  position: relative;
+}
+
+.cselect__native {
+  display: none;
+}
+
+.cselect__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  /* فاصله‌ی بیشتر از لبه‌ی باکس برای آیکون chevron (قبلاً تقریباً به لبه می‌چسبید) */
+  padding: 12px 1.1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: normal;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cselect__trigger:focus-visible,
+.cselect.is-open .cselect__trigger {
+  outline: none;
+  border-color: var(--first-color);
+}
+
+.cselect__trigger:focus-visible {
+  box-shadow: 0 0 0 3px hsla(var(--hue-color), 89%, 60%, 0.22);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cselect__trigger:hover {
+    border-color: hsla(var(--hue-color), 89%, 60%, 0.65);
+  }
+}
+
+.cselect__value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* chevron: پایین‌نما در حالت بسته؛ با باز شدن نرم به سمت بالا می‌چرخد (همان chevron سوالات متداول) */
+.cselect__chevron {
+  flex-shrink: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  color: var(--text-muted);
+  transform: translateY(-0.15rem) rotate(45deg);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
+}
+
+.cselect.is-open .cselect__chevron {
+  color: var(--first-color);
+  transform: translateY(0.15rem) rotate(-135deg);
+}
+
+/* پنل لیست: با کم‌رنگ‌شدن + کمی حرکت + باز شدن از بالا به پایین (clip-path) نمایش داده می‌شود؛
+   inset منفی جلوی بریده شدن سایه را می‌گیرد */
+.cselect__panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  clip-path: inset(-12px -40px 100% -40px);
+  transition: opacity 0.25s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    clip-path 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.35s;
+}
+
+.cselect.is-open .cselect__panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  clip-path: inset(-12px -40px -40px -40px);
+  transition-delay: 0s;
+}
+
+/* وقتی زیر دکمه جا نیست، لیست رو به بالا باز می‌شود */
+.cselect--up .cselect__panel {
+  top: auto;
+  bottom: calc(100% + 0.4rem);
+  transform: translateY(6px);
+  clip-path: inset(100% -40px -12px -40px);
+}
+
+.cselect--up.is-open .cselect__panel {
+  transform: translateY(0);
+  clip-path: inset(-40px -40px -12px -40px);
+}
+
+html[dir="rtl"] .cselect__panel {
+  direction: rtl;
+}
+
+.cselect__list {
+  max-height: 15rem;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  /* اسکرول‌بار مرورگر مخفی؛ به‌جایش همان اسکرول‌بار سفارشی صفحه و پاپ‌آپ (createScrollbar در main.js) نمایش داده می‌شه */
+  scrollbar-width: none;
+}
+
+.cselect__list::-webkit-scrollbar {
+  display: none;
+}
+
+/* پوششِ لیست: اسکرول‌بار سفارشی داخل آن و کنار لیست می‌نشیند (سمتش با زبان عوض می‌شه، قاعده‌ی html[dir] همان اسکرول‌بار صفحه) */
+.cselect__scroll {
+  position: relative;
+  min-height: 0;
+}
+
+.cselect__scroll > .cscroll {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  z-index: 2;
+}
+
+.cselect__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.cselect__option[hidden] {
+  display: none;
+}
+
+.cselect__option.is-active {
+  background-color: hsla(var(--hue-color), 89%, 60%, 0.14);
+}
+
+.cselect__option[aria-selected="true"] {
+  color: var(--first-color);
+  font-weight: var(--font-semi);
+}
+
+/* تیکِ گزینه‌ی انتخاب‌شده (در لیست کدها به‌جایش خودِ کد نمایش داده می‌شود) */
+.cselect:not(.cselect--code) .cselect__option[aria-selected="true"]::after {
+  content: "";
+  flex-shrink: 0;
+  width: 0.7rem;
+  height: 0.4rem;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.cselect__option-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cselect__option-extra {
+  flex-shrink: 0;
+  direction: ltr;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.cselect__search {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--border-color);
+  outline: none;
+  background-color: transparent;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.cselect__search::placeholder {
+  color: var(--text-muted);
+}
+
+.cselect__empty {
+  padding: 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.cselect__empty[hidden] {
+  display: none;
+}
+
+/* ==================== فیلد تماس: [کد کشور | شماره] یا آیدی تلگرام ====================
+   ردیف همیشه چپ‌به‌راست است (شماره و کد کشور لاتین‌اند: «+98 | 912…»)، حتی در صفحه‌ی راست‌چین.
+   در حالت تلگرام کد کشور به‌آرامی جمع می‌شود و باکس کل عرض را می‌گیرد */
+.contact-info {
+  display: flex;
+  align-items: flex-start;
+  direction: ltr;
+}
+
+.contact-info .input-group {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ارتفاع باکس شماره و دکمه‌ی کد کشور یکی باشه (فونت "+98" با وزن نیم‌ضخیم خط را ۲ پیکسل بلندتر می‌کرد) */
+.contact-info .contact__input,
+.cselect--code .cselect__trigger {
+  height: 3.2rem;
+}
+
+.contact-info .contact__input {
+  text-align: left;
+}
+
+.contact-info__code {
+  flex: 0 0 7.5rem;
+  margin-right: 0.75rem;
+  transition: flex-basis 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    margin 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease,
+    visibility 0s linear 0s;
+}
+
+.contact-info[data-mode="telegram"] .contact-info__code {
+  flex-basis: 0;
+  margin-right: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition-delay: 0s, 0s, 0s, 0.4s;
+}
+
+.cselect--code .cselect__trigger {
+  padding-inline: 0.85rem;
+}
+
+.cselect--code .cselect__value {
+  direction: ltr;
+  font-weight: var(--font-semi);
+}
+
+.cselect--code .cselect__panel {
+  right: auto;
+  width: min(21rem, calc(100vw - 2rem));
+}
+
+/* لیبل شناور باکس تماس هم از سمت چپ شروع می‌شود، چون متنی که تایپ می‌شود (شماره/آیدی) چپ‌به‌راست است */
+html .contact-info .input-group label {
+  left: 12px;
+  right: auto;
+}
+
+html[dir] .contact-info .contact__input:focus + label,
+html[dir] .contact-info .contact__input:not(:placeholder-shown) + label {
+  left: 10px;
+  right: auto;
+}
+
+/* ردیفِ چپ‌به‌راست نباید جهت متن پیام خطا را عوض کند */
+html[dir="rtl"] .contact-info .error-message {
+  direction: rtl;
+}
+
+/* ==================== فاصله‌ی عمودی فیلدهای متنی فرم ====================
+   ورودی‌ها قبلاً inline-block بودند و margin-bottom قدیمی‌شان (۲rem) به فاصله‌ی ۱.۵remِ گروه اضافه می‌شد؛ نتیجه یک فضای خالیِ ۳.۵rem
+   بعد از هر فیلد بود. حالا ورودی block است و گروه خودش فاصله را می‌دهد. پیام خطا هم درست زیر باکس می‌نشیند (۲px پایین‌تر)
+   و ۲.۲۵rem برای آن و برای لیبل شناورِ فیلد بعدی (که ۱۰px بالا می‌آید) کافی است */
+.contact__form .input-group {
+  margin-bottom: 2.25rem;
+}
+
+.contact__form .input-group .contact__input {
+  display: block;
+  margin-bottom: 0;
+}
+
+/* ==================== هیرو روی صفحه‌های کم‌ارتفاع ====================
+   ارتفاع هیرو از محتوا می‌آید (نه از ارتفاع پنجره). روی نمایشگرهای ۱۰۸۰ با مقیاس ۱۲۵٪ (ارتفاع واقعیِ حدود ۶۶۰px) عکس، آیکون‌های
+   دورش و آیکون‌های شبکه‌های اجتماعی زیر لبه‌ی صفحه می‌افتادند و قبل از اسکرول «بریده» دیده می‌شدند. فقط روی دسکتاپ‌های کم‌ارتفاع
+   فاصله‌ی بالا، فاصله‌ی ردیف‌ها و فاصله‌ی خطوط تیتر فشرده می‌شود؛ روی صفحه‌های بلند هیچ چیز عوض نمی‌شود */
+@media screen and (min-width: 992px) and (max-height: 800px) {
+  /* فاصله‌ی بالا با ارتفاع پنجره کم می‌شود (۸۰۰px ← ۱۶۰px مثل قبل، ۶۶۳px ← حدود ۱۳۳px) ولی هیچ‌وقت زیر ۱۰۴px نمی‌رود تا تیتر
+     و آیکون‌های دور عکس زیر هدر ثابت (۷۲px) نروند؛ فاصله‌ی ردیف تیتر تا آیکون‌های شبکه‌های اجتماعی هم از ۵rem به ۳rem می‌رسد */
+  .home {
+    padding-top: clamp(6.5rem, 20vh, 10rem);
+    row-gap: 3rem;
+  }
+
+  .home__title {
+    line-height: 1.2;
   }
 }

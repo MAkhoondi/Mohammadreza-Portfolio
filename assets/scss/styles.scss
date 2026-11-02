@@ -1,5 +1,48 @@
-/*===== GOOGLE FONTS =====*/
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+/*===== FONTS (self-hosted Poppins, subset: Latin) =====*/
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/poppins-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/poppins-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/poppins-700.woff2") format("woff2");
+}
+
+/*===== FONTS (self-hosted Vazirmatn, subset: Arabic/Persian) =====*/
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/vazirmatn-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/vazirmatn-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Vazirmatn";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/vazirmatn-var.woff2") format("woff2");
+}
 
 /*===== VARIABLES CSS =====*/
 :root{
@@ -337,6 +380,9 @@ img{
   &__css .skills__bar::after {
     width: 80%;
   }
+  &__tailwindcss .skills__bar::after {
+    width: 60%;
+  }
   &__js .skills__bar::after {
     width: 60%;
   }
@@ -344,6 +390,9 @@ img{
     width: 40%;
   }
   &__vue .skills__bar::after {
+    width: 60%;
+  }
+  &__nextjs .skills__bar::after {
     width: 60%;
   }
 
