@@ -8,6 +8,7 @@ const translations = {
         nav_work: "My Portfolio",
         nav_contact: "Contact Me",
         resume_download: "Download Resume",
+        scroll_top: "Back to top",
         theme_tooltip_to_dark: "Switch to dark mode",
         theme_tooltip_to_light: "Switch to light mode",
         home_title: `Hi, I'm<br><span class="home__title-color">Mohammadreza Akhoondi</span><br>Web Developer`,
@@ -160,6 +161,7 @@ const translations = {
         nav_work: "نمونه‌کارهای من",
         nav_contact: "ارتباط با من",
         resume_download: "دانلود رزومه",
+        scroll_top: "بازگشت به بالا",
         theme_tooltip_to_dark: "تغییر به حالت تاریک",
         theme_tooltip_to_light: "تغییر به حالت روشن",
         home_title: `سلام،<br><span class="home__title-color">محمدرضا آخوندی</span> هستم<br>توسعه‌دهنده وب`,
@@ -543,7 +545,7 @@ window.matchMedia('(min-width: 768px)').addEventListener('change', e => {
 // وقتی برمی‌گرده، :hover/:active مرورگر گاهی روشون "گیر" کرده می‌مونه. به‌جاش همین کلاس is-pressed
 // فقط برای مدت واقعی لمس/فشردن با pointer event ها کنترل می‌شه و با رها شدن یا برگشتن به صفحه همیشه پاک می‌شه
 // دکمه‌ی nav-toggle از این مکانیزم مستثناست؛ بالا رفتنش فقط به کلاس open (در پایین همین فایل) وابسته‌ست
-const PRESSABLE_SELECTOR = '.flag-button:not(.nav__toggle), .lang-toggle, .theme-toggle, .resume-download, .nav__cta, .chip, .work__img'
+const PRESSABLE_SELECTOR = '.flag-button:not(.nav__toggle), .lang-toggle, .theme-toggle, .resume-download, .nav__cta, .chip, .scroll-top, .work__img'
 let pressedEl = null
 function setPressed(el){
     if(pressedEl && pressedEl !== el) pressedEl.classList.remove('is-pressed')
@@ -559,6 +561,46 @@ document.addEventListener('pointercancel', () => setPressed(null))
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') setPressed(null) })
 window.addEventListener('pageshow', () => setPressed(null))
 window.addEventListener('blur', () => setPressed(null))
+
+/*===== SCROLL TO TOP BUTTON =====*/
+// بعد از SHOW_AFTER پیکسل اسکرول ظاهر می‌شه؛ --progress (۰ تا ۱) حلقه‌ی دور دکمه رو با درصد اسکرول صفحه پر می‌کنه.
+// کلیک: صفحه نرم به بالا می‌ره و کلاس is-launching انیمیشن «پرتاب» فلش رو پخش می‌کنه (استایل‌ها در styles.css)
+const scrollTopBtn = document.getElementById('scrollTop')
+if(scrollTopBtn){
+    const SHOW_AFTER = 320
+    const LAUNCH_MS = 900
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const scrollTopBar = scrollTopBtn.querySelector('.scroll-top__bar')
+    let scrollTopTicking = false
+    let launchTimer = 0
+
+    function updateScrollTop(){
+        scrollTopTicking = false
+        const y = window.scrollY || document.documentElement.scrollTop
+        const max = document.documentElement.scrollHeight - window.innerHeight
+        const progress = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0
+        scrollTopBtn.style.setProperty('--progress', progress.toFixed(4))
+        // offset مستقیم از JS: فایرفاکس calc(1 - var(--progress)) را برای stroke-dashoffset نمی‌فهمد (حلقه همیشه پر می‌شد)
+        if(scrollTopBar) scrollTopBar.style.strokeDashoffset = (1 - progress).toFixed(4)
+        scrollTopBtn.classList.toggle('is-visible', y > SHOW_AFTER)
+    }
+    function requestScrollTopUpdate(){
+        if(scrollTopTicking) return
+        scrollTopTicking = true
+        requestAnimationFrame(updateScrollTop)
+    }
+    window.addEventListener('scroll', requestScrollTopUpdate, { passive: true })
+    window.addEventListener('resize', requestScrollTopUpdate)
+
+    scrollTopBtn.addEventListener('click', () => {
+        scrollTopBtn.classList.add('is-launching')
+        clearTimeout(launchTimer)
+        launchTimer = setTimeout(() => scrollTopBtn.classList.remove('is-launching'), LAUNCH_MS)
+        window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' })
+    })
+
+    updateScrollTop()
+}
 
 /*==================== REMOVE MENU MOBILE ====================*/
 const navLink = document.querySelectorAll('.nav__link')
@@ -654,7 +696,18 @@ const reveal = (selector, { delay = 0, stagger = false, ...extra } = {}) =>
 
 // بعد از تمام شدن انیمیشن ورود، یه کلاس اضافه می‌کنیم تا ترنزیشن سریع هاور
 // (رفتن و برگشتن) بدون تداخل با ترنزیشن کند ScrollReveal اعمال بشه
-const markRevealed = el => el.classList.add('is-revealed');
+// ScrollReveal بعد از ورود هم transform: matrix3d(...) و transition: all را روی عنصر نگه می‌دارد. فایرفاکس هر کارت را «سه‌بعدی و در حال تغییر» می‌بیند
+// و جدا از بقیه با سایه‌اش دوباره می‌کشد (اسکرول ۴۰ میلی‌ثانیه به‌جای ۱۷ برای هر فریم)؛ حالت نهایی همان حالت عادی CSS است، پس بعد از ورود پاکشان می‌کنیم
+const settle = el => {
+    el.style.transform = ''
+    el.style.transition = ''
+    el.style.opacity = ''
+    el.style.visibility = ''
+}
+const markRevealed = el => {
+    el.classList.add('is-revealed')
+    settle(el)
+}
 
 // هیرو: تیتر، زیرتیتر و دکمه‌ها پشت سر هم، عکس هم‌زمان با کمی بزرگ‌شدن، و بعد آیکون‌های شبکه‌های اجتماعی
 reveal('.home__title');
@@ -664,7 +717,7 @@ reveal('.home__img', { delay: 100, scale: MOTION.reduced ? 1 : 0.94 });
 reveal('.home__social-icon', { delay: 360, interval: MOTION.reduced ? 0 : 90 });
 
 // نوار اعتماد زیر هیرو
-reveal('.trust__item', { stagger: true });
+reveal('.trust__item', { stagger: true, afterReveal: markRevealed });
 
 // درباره من و مهارت‌ها
 reveal('.about__img');

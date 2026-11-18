@@ -24,6 +24,7 @@
 - **استک فنی دسته‌بندی‌شده:** مهارت‌ها در پنج گروه (ساخت ظاهر، فریم‌ورک‌ها، پایگاه داده و احراز هویت، افزونه‌ها و ابزارهای کمکی، مدیریت محتوا) با آیکون و بدون درصد؛ فهرست بر اساس تکنولوژی‌های خود پروژه‌های نمونه‌کار است.
 - **اسکرول‌بار سفارشی:** اسکرول‌بار مرورگر مخفی است و یک اسکرول‌بار باریک و مینیمال (`createScrollbar` در `main.js`) برای صفحه و پاپ‌آپ نشان داده می‌شود؛ در فارسی سمت راست و در انگلیسی سمت چپ. اسکرول واقعی همان اسکرول بومی مرورگر است (چرخ ماوس، لمس، کیبورد).
 - **دکمه‌ی ثابت «مشاوره رایگان» در هدر:** همیشه در دسترس است و فرم را با نوع درخواست «مشاوره» باز می‌کند؛ در عرض‌های کم فقط آیکون نشان می‌دهد و دکمه‌ی رزومه در دسکتاپ فقط آیکون است.
+- **دکمه‌ی بازگشت به بالا:** گوشه‌ی پایین صفحه (سمت راست در فارسی، سمت چپ در انگلیسی)، بعد از کمی اسکرول با انیمیشن ظاهر می‌شود؛ حلقه‌ی دور آن درصد پیشرفت اسکرول صفحه را نشان می‌دهد، با هاور (دسکتاپ) فلش‌ها بالا می‌روند و برچسب باز می‌شود، و با کلیک فلش «پرتاب» می‌شود و صفحه نرم به بالا می‌رود. زیر پاپ‌آپ و منوی موبایل پنهان است و با `prefers-reduced-motion` انیمیشن‌هایش خاموش می‌شود.
 - **نمونه‌کارها:** پنج کارت با اسکرین‌شات واقعی هر پروژه در قاب مرورگر (دو کارت اول بزرگ‌ترند؛ وضعیت پروژه روی عکس، تکنولوژی‌ها زیر آن و دکمه‌ی «مشاهده جزئیات» هنگام هاور)، به‌همراه نوار «پروژه‌ی جدید» برای پروژه‌های بعدی. با کلیک (یا Enter) روی هر کارت، پاپ‌آپ جزئیات (معرفی، چالش و رویکرد، تکنولوژی‌ها، ویژگی‌های کلیدی) با چیپ‌های وضعیت (در دست توسعه / اتمام‌یافته) و نوع (پروژه فعال / تمرینی) کنار عنوان و گالری تصاویر/ویدیو را نشان می‌دهد.
 - **ظاهر و ریتم صفحه:** عکس هیرو کل شکل بلاب را پر می‌کند و پشتش هاله‌ی نور و یک مسیر خط‌چین برای آیکون‌های در حال چرخش است؛ بالای هر بخش یک خط گرادیانی و هاله‌ی نور محو (یکی در میان از راست و چپ) و بالای عنوانش یک برچسب کوچک دوزبانه قرار دارد که نقطه‌اش مثل نقطه‌ی وضعیت پروژه‌ها می‌تپد. کارت‌های خدمات، مراحل همکاری و یادداشت پشتیبانی کمی عمق دارند و روی دسکتاپ نوری دنبال ماوس روی آن‌ها حرکت می‌کند (روی لمس‌صفحه فقط عمق ثابت دیده می‌شود).
 - **نوار اعتماد و خدمات:** زیر هیرو چهار آیتم کوتاه (سابقه، مشاوره‌ی رایگان، زمان تحویل معمول و پشتیبانی پس از تحویل) قرار دارد که فقط چیزهایی را می‌گوید که در خود صفحه آمده است. در کارت‌های خدمات آیکون گرادیانی، «مناسب برای» با خط کناری و زمان تحویل به‌شکل چیپ نشان داده می‌شود، و روی دسکتاپ یک خط‌چین مراحل همکاری را به هم وصل می‌کند.
@@ -49,6 +50,8 @@
 ├── robots.txt
 ├── sitemap.xml
 ├── CNAME                 دامنه‌ی سفارشی برای GitHub Pages
+├── tools/
+│   └── deploy-to-arvan.js  انتشار فایل‌های تغییرکرده روی صندوقچه‌ی آروان (اختیاری)
 └── assets/
     ├── css/              styles.css و فایل‌های آیکون
     ├── js/
@@ -100,12 +103,14 @@ python -m http.server 8000
 2. در مسیر **Settings → Pages** گزینه‌ی **Deploy from a branch** را انتخاب کنید، برنچ مورد نظر را بگذارید و پوشه را `/ (root)` انتخاب کنید.
 3. اگر دامنه‌ی سفارشی دارید، آن را در همین بخش وارد کنید (فایل `CNAME` ساخته می‌شود) و رکوردهای DNS را طبق [راهنمای رسمی GitHub Pages](https://docs.github.com/en/pages) تنظیم کنید.
 4. پس از صدور گواهی SSL، گزینه‌ی **Enforce HTTPS** را فعال کنید. اگر سایت پشت CDN قرار دارد، ممکن است این گزینه در GitHub در دسترس نباشد؛ در این صورت HTTPS را از تنظیمات CDN فعال کنید.
+5. **اختیاری، انتشار روی صندوقچه‌ی ArvanCloud:** اگر مبدأ CDN را از GitHub Pages به یک صندوقچه‌ی آروان (Object Storage با «استاتیک وب‌سایت») ببرید، فایل‌های سایت را می‌توان با یک دستور فرستاد. صندوقچه باید اول در پنل آروان ساخته شود و نامش با `bucket` در `tools/deploy-to-arvan.js` یکی باشد. کلیدهای صندوقچه (Access Key و Secret Key از «مدیریت دسترسی» پنل آروان) را در فایل `%USERPROFILE%\.arvan-deploy.json` بگذارید: `{ "accessKey": "...", "secretKey": "..." }`؛ این فایل هرگز نباید داخل پروژه یا git برود. `node tools/deploy-to-arvan.js` فقط نشان می‌دهد چه چیزی تغییر کرده؛ `node tools/deploy-to-arvan.js --yes` فایل‌های تغییرکرده را می‌فرستد (با `--delete` فایل‌های حذف‌شده هم پاک می‌شوند) و در پایان آدرس‌هایی را که باید در پنل آروان (CDN ← Caching ← پاک‌کردن گزینشی) پاک شوند چاپ می‌کند.
 
 ### بهینه‌سازی عملکرد
 
 - فونت‌ها، آیکون‌ها و کتابخانه‌های جانبی به‌صورت محلی بارگذاری می‌شوند تا وابستگی به CDNهای خارجی کم شود.
 - تصاویر و ویدیوها فشرده‌سازی شده‌اند، ابعاد تصاویر به‌صورت صریح مشخص شده و تصاویر پایین صفحه با `loading="lazy"` بارگذاری می‌شوند.
 - CSS و JavaScript سبک و بدون فریم‌ورک هستند.
+- انیمیشن‌های همیشه‌روشن (تپش نقطه‌ها، جریان خط‌چین‌ها، آیکون‌های چرخان) فقط با `transform` و `opacity` انجام می‌شوند تا روی کارت گرافیک اجرا شوند و صفحه در حالت بیکاری ریسمان اصلی مرورگر را مشغول نکند. بعد از ورود هر کارت، استایل‌های inline ScrollReveal (`transform: matrix3d` و `transition: all`) پاک می‌شوند و سایه‌های کارت‌های کوچک و پرتعداد سبک‌اند؛ این‌ها اسکرول در Firefox را کند می‌کردند.
 
 ### مجوز و استفاده
 
@@ -142,6 +147,7 @@ This repository contains the personal portfolio website of **Mohammadreza Akhoon
 - **Grouped tech stack:** skills shown as icon chips in five groups (interface, frameworks, database and authentication, plugins and helpers, content management), with no percentages; the list follows the tech stacks of the portfolio projects themselves.
 - **Custom scrollbar:** the browser scrollbar is hidden and a thin, minimal one (`createScrollbar` in `main.js`) is drawn for the page and the project popup, on the right in Persian and on the left in English. Scrolling itself is still the browser's native scrolling (wheel, touch, keyboard).
 - **Sticky "Free Consultation" button in the header:** always available, and opens the contact form with the "consultation" request type preselected. It shows only an icon on narrow screens, and the resume button is icon-only on desktop.
+- **Back-to-top button:** appears with an animation in a bottom corner (right in Persian, left in English) after a little scrolling; the ring around it shows how far down the page you are, on hover (desktop) the arrows rise like an elevator and a label opens, and on click the arrow launches while the page scrolls smoothly to the top. It is hidden under the project popup and the mobile menu, and its animations are turned off with `prefers-reduced-motion`.
 - **Portfolio:** five project cards, each with a real screenshot in a browser frame (the first two are larger; the project status sits on the image, the tech stack below it and a "View details" button appears on hover), plus a "new project" strip for upcoming work. Clicking a card (or pressing Enter) opens a popup with an overview, challenge and approach, tech stack, key features and an image/video gallery, with status chips (in development / completed) and type chips (active / practice project) next to the title.
 - **Look and rhythm:** the hero photo fills the whole blob, with a glow behind it and a dashed path for the orbiting icons; every section starts with a gradient line and a faint glow (alternating right and left) and a small bilingual label above its title whose dot pulses like the project status dots. The service cards, process steps and support note have a little depth, and on desktop a light follows the mouse across them (on touch screens only the static depth shows).
 - **Trust strip and services:** under the hero, four short items (experience, free consultation, typical delivery time and support after delivery) say only what the page itself already says. The service cards have a gradient icon, a side line on the "best for" text and the delivery time as a chip, and on desktop a dashed line joins the steps of the process.
@@ -167,6 +173,8 @@ This repository contains the personal portfolio website of **Mohammadreza Akhoon
 ├── robots.txt
 ├── sitemap.xml
 ├── CNAME                 Custom domain for GitHub Pages
+├── tools/
+│   └── deploy-to-arvan.js  Uploads the changed files to an ArvanCloud bucket (optional)
 └── assets/
     ├── css/              styles.css and icon font styles
     ├── js/
@@ -216,12 +224,14 @@ The site is static and is hosted on **GitHub Pages**:
 2. Go to **Settings → Pages**, choose **Deploy from a branch**, select your branch, and set the folder to `/ (root)`.
 3. To use a custom domain, enter it in the same section (this creates the `CNAME` file), then configure your DNS records following the [official GitHub Pages documentation](https://docs.github.com/en/pages).
 4. Once the SSL certificate is issued, enable **Enforce HTTPS**. If the site sits behind a CDN, this option may be unavailable in GitHub; in that case, enable HTTPS in the CDN settings instead.
+5. **Optional, publishing to an ArvanCloud bucket:** if you move the CDN origin from GitHub Pages to an ArvanCloud bucket (Object Storage with "static website"), the site files can be uploaded with one command. The bucket has to be created in the Arvan panel first and its name has to match `bucket` in `tools/deploy-to-arvan.js`. Put the bucket keys (Access Key and Secret Key from "Access management" in the Arvan panel) in `%USERPROFILE%\.arvan-deploy.json`: `{ "accessKey": "...", "secretKey": "..." }`; this file must never go into the project or git. `node tools/deploy-to-arvan.js` only shows what changed; `node tools/deploy-to-arvan.js --yes` uploads the changed files (add `--delete` to remove files that no longer exist) and finally prints the URLs to purge in the Arvan panel (CDN, Caching, selective purge).
 
 ### Performance
 
 - Fonts, icons and third-party libraries are self-hosted to reduce dependencies on external CDNs.
 - Images and videos are compressed, image dimensions are set explicitly, and below-the-fold images use `loading="lazy"`.
 - The CSS and JavaScript are lightweight and framework-free.
+- The always-on animations (pulsing dots, flowing dashed lines, orbiting icons) use only `transform` and `opacity`, so they run on the GPU and the page does no main-thread work while idle. After each card has entered, ScrollReveal's inline leftovers (`transform: matrix3d` and `transition: all`) are cleared, and the many small cards use a light shadow; both used to make scrolling slow in Firefox.
 
 ### License and Usage
 

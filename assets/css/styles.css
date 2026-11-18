@@ -66,6 +66,9 @@
   --border-color: #ccc;
   --track-color: #e0e0e0;
   --card-shadow: 0px 4px 25px rgba(14, 36, 49, 0.15);
+  /* سایه‌ی سبک برای کارت‌ها و چیپ‌های کوچک و پرتعداد (سایه‌ی بزرگ و محو روی ده‌ها المان، هنگام اسکرول سنگین‌ترین کار مرورگر است) */
+  --panel-shadow: 0 6px 16px -4px rgba(14, 36, 49, 0.16);
+  --chip-shadow: 0 2px 8px rgba(14, 36, 49, 0.1);
   --header-shadow: 0 1px 4px rgba(146, 161, 176, 0.15);
   /*===== Fuente y tipografia =====*/
   --body-font: "Poppins", sans-serif;
@@ -574,7 +577,7 @@ html[lang="en"] .home__title {
   height: 2.25rem;
   border-radius: 50%;
   background: var(--surface-color);
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--chip-shadow);
   color: var(--first-color);
   font-size: 1.15rem;
   transform: translate(-50%, -50%) translateY(calc(-1 * var(--orbit-radius, 230px)));
@@ -816,7 +819,7 @@ html[lang="en"] .home__title {
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: 0.6rem;
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--chip-shadow);
   font-weight: var(--font-semi);
   transition: border-color 0.3s ease;
 }
@@ -948,7 +951,7 @@ html[lang="en"] .home__title {
   background-color: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: 1rem;
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--panel-shadow);
   cursor: pointer;
   /* بدون important: تا انیمیشن ورود ScrollReveal (اسکرول/رفرش) دست‌نخورده بمونه */
   transition: transform 0.45s var(--ease-out),
@@ -1055,11 +1058,9 @@ html[lang="en"] .home__title {
   font-weight: var(--font-semi);
   line-height: 1.8;
   color: #fff;
-  background-color: rgba(10, 16, 26, 0.72);
+  background-color: rgba(10, 16, 26, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 2rem;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
 }
 
 .work__status::before {
@@ -1077,9 +1078,27 @@ html[lang="en"] .home__title {
 }
 
 .work__status--progress::before {
+  position: relative;
+  z-index: 1;
   background-color: hsl(38, 95%, 60%);
-  animation: chipDotBeat 1.8s ease-in-out infinite,
-             chipDotRing 1.8s ease-out infinite;
+  animation: chipDotBeat 1.8s ease-in-out infinite;
+}
+
+/* حلقه‌ی تپش نقطه (transform/opacity، روی کارت گرافیک): یک دایره‌ی هم‌اندازه‌ی نقطه که بزرگ می‌شود و محو می‌شود */
+.work__status--progress::after {
+  --ring-scale: 3;
+  content: "";
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 0.7rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: -0.2rem;
+  border-radius: 50%;
+  background-color: var(--dot-glow);
+  opacity: 0;
+  pointer-events: none;
+  animation: dotRingOut 1.8s ease-out infinite;
 }
 
 .work__view {
@@ -1297,6 +1316,11 @@ html[dir="rtl"] .work__go i {
 
   .work__status--progress::before {
     animation: none;
+  }
+
+  .work__status--progress::after {
+    animation: none;
+    display: none;
   }
 }
 
@@ -2573,6 +2597,8 @@ html[data-theme="dark"] {
   --border-color: #33404f;
   --track-color: #2a3444;
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --panel-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.45);
+  --chip-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   --header-shadow: 0 1px 12px rgba(0, 0, 0, 0.5);
 }
 
@@ -2867,7 +2893,7 @@ html[data-theme="dark"] .services__note {
   padding: 1.5rem;
   background-color: var(--surface-color);
   border-radius: 0.75rem;
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--panel-shadow);
   /* بدون important: تا انیمیشن ورود ScrollReveal دست‌نخورده بمونه */
   transition: transform 0.45s var(--ease-out),
               box-shadow 0.45s var(--ease-out);
@@ -4223,30 +4249,320 @@ html[dir="rtl"] .contact-info .error-message {
   }
 }
 
+/* ==================== دکمه‌ی بازگشت به بالا ==================== */
+/* گوشه‌ی پایین صفحه: فارسی (rtl) سمت راست، انگلیسی سمت چپ (مثل اسکرول‌بار سفارشی)؛ بعد از کمی اسکرول با چرخش و جهش فنری ظاهر می‌شه؛ حلقه‌ی سفید دورش با --progress
+   (که main.js می‌نویسه) پیشرفت اسکرول صفحه رو نشون می‌ده. هاور (فقط دسکتاپ): فلش‌ها مثل آسانسور بالا می‌رن و برچسب باز می‌شه.
+   کلیک: فلش پرتاب می‌شه و یک موج از دکمه پخش می‌شه. z-index یکی کمتر از هدر/پاپ‌آپ/توست تا همیشه زیر اونا باشه */
+.scroll-top {
+  --progress: 0;
+  position: fixed;
+  left: 1.25rem;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  z-index: calc(var(--z-fixed) - 1);
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0;
+  color: #fff;
+  background: radial-gradient(circle at 30% 22%, hsl(var(--hue-color), 95%, 74%) 0%, var(--first-color) 52%, hsl(var(--hue-color), 78%, 44%) 100%);
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 14px 28px -10px hsla(var(--hue-color), 89%, 52%, 0.7),
+              0 3px 8px rgba(14, 36, 49, 0.2),
+              inset 0 1px 1px rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(1.75rem) scale(0.4) rotate(-90deg);
+  transition: opacity 0.25s ease,
+              transform 0.3s ease,
+              box-shadow 0.35s ease,
+              visibility 0s linear 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[dir="rtl"] .scroll-top {
+  left: auto;
+  right: 1.25rem;
+}
+
+.scroll-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition: opacity 0.3s ease,
+              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s ease,
+              visibility 0s;
+}
+
+/* زیر پاپ‌آپ و کنار سایدبار موبایل دیده نشه */
+html.popup-open .scroll-top,
+html.menu-open .scroll-top {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.6);
+}
+
+.scroll-top:focus-visible {
+  outline: 3px solid hsla(var(--hue-color), 89%, 60%, 0.45);
+  outline-offset: 3px;
+}
+
+/* دو موج نور: یکی هنگام ظاهر شدن (دو بار)، یکی هنگام کلیک */
+.scroll-top::before,
+.scroll-top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.scroll-top.is-visible::before {
+  animation: scroll-top-pulse 1.8s ease-out 0.5s 2;
+}
+
+.scroll-top.is-visible.is-launching::after {
+  border: 2px solid hsla(var(--hue-color), 89%, 60%, 0.85);
+  animation: scroll-top-ripple 0.75s ease-out;
+}
+
+/* حلقه‌ی پیشرفت (از بالا شروع می‌شه و ساعت‌گرد پر می‌شه) */
+.scroll-top__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.scroll-top__track,
+.scroll-top__bar {
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.scroll-top__track {
+  stroke: rgba(255, 255, 255, 0.28);
+}
+
+.scroll-top__bar {
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-dasharray: 1 1;
+  /* خالی در شروع؛ main.js مقدار واقعی را مستقیم روی همین عنصر می‌نویسد (فایرفاکس calc(۱ - عدد) را برای stroke-dashoffset نمی‌فهمد و حلقه همیشه پر می‌ماند) */
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
+  transition: stroke-dashoffset 0.2s linear;
+}
+
+/* فلش: دو کپی زیر هم داخل یک کادر بریده‌شده؛ حرکت دادن هر دو به اندازه‌ی ۱۴۰٪ جای اولی رو به دومی می‌ده (حلقه‌ی بی‌درز) */
+.scroll-top__arrows {
+  position: relative;
+  width: 1.4rem;
+  height: 1.4rem;
+  overflow: hidden;
+}
+
+.scroll-top__arrow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.scroll-top__arrow--next {
+  top: 140%;
+}
+
+/* حالت استراحت: فلش آرام بالا و پایین می‌ره تا توجه رو جلب کنه */
+.scroll-top.is-visible .scroll-top__arrow:first-child {
+  animation: scroll-top-bob 2.6s ease-in-out 1.4s infinite;
+}
+
+/* برچسب (تولتیپ): رنگ‌ها وارونه‌ی تم هستن تا روی هر دو تم خوانا باشه */
+.scroll-top__tip {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.85rem);
+  padding: 0.4rem 0.8rem;
+  font-size: var(--smaller-font-size);
+  font-weight: var(--font-semi);
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--bg-color);
+  background-color: var(--text-color);
+  border-radius: 0.5rem;
+  box-shadow: var(--card-shadow);
+  opacity: 0;
+  transform: translate(-10px, -50%);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.3s var(--ease-out);
+}
+
+.scroll-top__tip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  background-color: inherit;
+  border-radius: 1px;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* فارسی: دکمه سمت راسته، پس برچسب (و فلش کوچکش) سمت چپ دکمه باز می‌شه */
+html[dir="rtl"] .scroll-top__tip {
+  left: auto;
+  right: calc(100% + 0.85rem);
+  transform: translate(10px, -50%);
+}
+
+html[dir="rtl"] .scroll-top__tip::after {
+  left: auto;
+  right: -4px;
+}
+
+.scroll-top:focus-visible .scroll-top__tip {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+@keyframes scroll-top-pulse {
+  0% { box-shadow: 0 0 0 0 hsla(var(--hue-color), 89%, 60%, 0.55); }
+  100% { box-shadow: 0 0 0 18px hsla(var(--hue-color), 89%, 60%, 0); }
+}
+
+@keyframes scroll-top-ripple {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.1); }
+}
+
+@keyframes scroll-top-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9%); }
+}
+
+@keyframes scroll-top-rise {
+  from { transform: translateY(0); }
+  to { transform: translateY(-140%); }
+}
+
+@keyframes scroll-top-launch-out {
+  0% { opacity: 1; transform: translateY(0) scaleY(1); }
+  100% { opacity: 0; transform: translateY(-190%) scaleY(1.7); }
+}
+
+@keyframes scroll-top-launch-in {
+  0%, 35% { transform: translateY(0); }
+  100% { transform: translateY(-140%); }
+}
+
+/* دسکتاپ: هاور واقعی ماوس */
+@media screen and (min-width: 768px) {
+  .scroll-top.is-visible:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 32px -10px hsla(var(--hue-color), 89%, 52%, 0.8),
+                0 4px 10px rgba(14, 36, 49, 0.22),
+                inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    transition: opacity 0.3s ease,
+                transform 0.35s var(--ease-out),
+                box-shadow 0.35s ease,
+                visibility 0s;
+  }
+
+  .scroll-top.is-visible:active {
+    transform: translateY(-2px) scale(0.93);
+  }
+
+  .scroll-top.is-visible:hover .scroll-top__arrow {
+    animation: scroll-top-rise 0.85s var(--ease-in-out) infinite;
+  }
+
+  .scroll-top:hover .scroll-top__tip {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+
+/* موبایل: به‌جای :hover/:active (که روی لمس گیر می‌کنن) کلاس is-pressed از main.js کنترل می‌شه؛ برچسب هم نمایش داده نمی‌شه */
+@media screen and (max-width: 767px) {
+  .scroll-top {
+    left: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    width: 3rem;
+    height: 3rem;
+  }
+
+  html[dir="rtl"] .scroll-top {
+    left: auto;
+    right: 1rem;
+  }
+
+  .scroll-top.is-visible.is-pressed {
+    transform: scale(0.9);
+  }
+
+  .scroll-top__tip {
+    display: none;
+  }
+}
+
+/* پرتاب هنگام کلیک (بعد از حالت‌های هاور/استراحت تا بر اونا غلبه کنه) */
+.scroll-top.is-visible.is-launching {
+  transform: translateY(-4px) scale(0.96);
+}
+
+.scroll-top.is-visible.is-launching .scroll-top__arrow:first-child {
+  animation: scroll-top-launch-out 0.45s cubic-bezier(0.5, 0, 0.9, 0.5) forwards;
+}
+
+.scroll-top.is-visible.is-launching .scroll-top__arrow--next {
+  animation: scroll-top-launch-in 0.7s var(--ease-out) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-top,
+  .scroll-top.is-visible,
+  .scroll-top.is-visible:hover {
+    transition: opacity 0.2s ease, visibility 0s;
+  }
+
+  .scroll-top::before,
+  .scroll-top::after,
+  .scroll-top__arrow,
+  .scroll-top.is-visible .scroll-top__arrow:first-child,
+  .scroll-top.is-visible:hover .scroll-top__arrow,
+  .scroll-top.is-visible.is-launching .scroll-top__arrow {
+    animation: none;
+  }
+}
+
+@media print {
+  .scroll-top {
+    display: none;
+  }
+}
+
 /* ==================== مرحله‌ی ۲ UI: هیرو، ریتم بخش‌ها و عمق کارت‌ها ==================== */
 
 /* --- هیرو: عکس کل بلاب رو پر می‌کنه (قبلاً یک مستطیل مشکی با لبه‌ی تیز روی بلاب آبی می‌افتاد)،
-   پشتش هاله‌ی نور، و یک مسیر خط‌چین نشون می‌ده که آیکون‌های تکنولوژی روش می‌چرخن --- */
-.home {
-  isolation: isolate;
-}
-
-/* شبکه‌ی نقطه‌ایِ محوِ پشت هیرو؛ عرض کامل صفحه (100vw)، با ماسک شعاعی تا فقط وسطش دیده بشه */
-.home::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 100vw;
-  transform: translateX(-50%);
-  background-image: radial-gradient(hsla(var(--hue-color), 89%, 60%, 0.22) 1px, transparent 1.6px);
-  background-size: 28px 28px;
-  -webkit-mask-image: radial-gradient(ellipse 52% 62% at 50% 46%, #000 18%, transparent 76%);
-  mask-image: radial-gradient(ellipse 52% 62% at 50% 46%, #000 18%, transparent 76%);
-  pointer-events: none;
-}
+   پشتش هاله‌ی نور، و یک مسیر خط‌چین نشون می‌ده که آیکون‌های تکنولوژی روش می‌چرخن.
+   (شبکه‌ی نقطه‌ای پشت کل هیرو برداشته شد: با آیکون‌های در حال چرخش هر فریم دوباره کشیده می‌شد و در فایرفاکس اسکرول بالای صفحه را کند می‌کرد) --- */
 
 .home__img {
   isolation: isolate;
@@ -4259,12 +4575,7 @@ html[dir="rtl"] .contact-info .error-message {
   z-index: -1;
   border-radius: 50%;
   background: radial-gradient(closest-side, hsla(var(--hue-color), 89%, 60%, 0.42), hsla(var(--hue-color), 89%, 60%, 0.12) 62%, transparent 100%);
-  filter: blur(14px);
   pointer-events: none;
-}
-
-.home__blob {
-  filter: drop-shadow(0 22px 38px hsla(var(--hue-color), 89%, 52%, 0.35));
 }
 
 .home__orbit::before {
@@ -4308,6 +4619,7 @@ html[data-theme="dark"] .section {
 
 /* برچسب کوچک بالای عنوان هر بخش (متن در main.js دوزبانه‌ست) */
 .section-eyebrow {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -4325,33 +4637,56 @@ html[data-theme="dark"] .section {
   border-radius: 2rem;
 }
 
-/* نقطه‌ی برچسب مثل نقطه‌ی «در دست توسعه» می‌تپد: خودِ نقطه نرم بزرگ و کوچک می‌شود (chipDotBeat) و با هر تپش یک حلقه از دورش باز می‌شود و محو می‌شود
-   (eyebrowDotRing؛ مثل chipDotRing ولی کمی بازتر چون نقطه‌ی برچسب کوچک است). مدت یک دور و رنگ حلقه (--dot-glow) همین‌جاست */
+/* نقطه‌ی برچسب مثل نقطه‌ی «در دست توسعه» می‌تپد: خودِ نقطه نرم بزرگ و کوچک می‌شود (chipDotBeat) و با هر تپش یک حلقه از دورش باز می‌شود و محو می‌شود.
+   هر دو با transform/opacity انجام می‌شوند (نه box-shadow) تا روی کارت گرافیک اجرا شوند و ریسمان اصلیِ مرورگر را هر فریم مشغول نکنند؛
+   حلقه یک دایره‌ی هم‌اندازه‌ی نقطه روی ::after است که بزرگ می‌شود (۳٫۸ برابر ≈ همان ۰٫۵۵rem قبلی) و محو می‌شود */
 .section-eyebrow::before {
-  --dot-glow: hsla(var(--hue-color), 89%, 60%, 0.6);
   content: "";
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 50%;
   background-color: var(--first-color);
-  animation: chipDotBeat 1.8s ease-in-out infinite,
-             eyebrowDotRing 1.8s ease-out infinite;
+  animation: chipDotBeat 1.8s ease-in-out infinite;
 }
 
-@keyframes eyebrowDotRing {
+.section-eyebrow::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 1rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-top: -0.2rem;
+  border-radius: 50%;
+  background-color: hsla(var(--hue-color), 89%, 60%, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  animation: dotRingOut 1.8s ease-out infinite;
+}
+
+@keyframes dotRingOut {
   0% {
-    box-shadow: 0 0 0 0 var(--dot-glow);
+    transform: scale(1);
+    opacity: 0.6;
   }
   100% {
-    box-shadow: 0 0 0 0.55rem transparent;
+    transform: scale(var(--ring-scale, 3.8));
+    opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .section-eyebrow::before {
     animation: none;
-    box-shadow: 0 0 0 3px hsla(var(--hue-color), 89%, 60%, 0.22);
+  }
+
+  .section-eyebrow::after {
+    animation: none;
+    transform: scale(2.5);
+    opacity: 0.22;
   }
 }
 
@@ -4373,19 +4708,27 @@ html[lang="en"] .section-eyebrow {
 .trust__item {
   position: relative;
   isolation: isolate;
+}
+
+/* برق ملایم بالای کارت فقط روی کارت‌های بزرگ خدمات؛ روی کارت‌های کوچک (مراحل، نوار اعتماد، یادداشت) در هر فریم اسکرول هزینه داشت و اثر دیدنی نداشت */
+.services__card {
   background-image: linear-gradient(180deg, hsla(var(--hue-color), 89%, 62%, 0.07), transparent 46%);
 }
 
-.process__step {
-  box-shadow: 0 6px 18px -12px rgba(14, 36, 49, 0.3);
+.process__step,
+.trust__item {
+  box-shadow: var(--panel-shadow);
+}
+
+html[data-theme="dark"] .services__card {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 42%);
 }
 
 html[data-theme="dark"] .services__card,
-html[data-theme="dark"] .process__step,
 html[data-theme="dark"] .services__note,
+html[data-theme="dark"] .process__step,
 html[data-theme="dark"] .trust__item {
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 42%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), var(--card-shadow);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), var(--panel-shadow);
 }
 
 .services__card::before,
@@ -4539,32 +4882,49 @@ html[data-theme="dark"] .trust__item {
 
 /* --- مراحل همکاری: روی چهارستونه، یک خط‌چین از هر مرحله به مرحله‌ی بعد می‌رود (جهتش با html[dir] خودکار برعکس می‌شود) --- */
 @media screen and (min-width: 1024px) {
-  /* خط‌چین پیوسته در حرکت است و به سمت مرحله‌ی بعد جریان دارد (چپ‌به‌راست در انگلیسی، راست‌به‌چپ در فارسی) */
-  .process__step:not(:last-child)::after {
+  /* خط‌چین پیوسته در حرکت است و به سمت مرحله‌ی بعد جریان دارد (چپ‌به‌راست در انگلیسی، راست‌به‌چپ در فارسی).
+     برای اینکه حرکتش با transform (روی کارت گرافیک) باشد نه با background-position (که هر فریم دوباره کشیده می‌شود)،
+     .process__flow یک کادر بریده‌شده‌ی ۱٫۵rem است و الگوی خط‌چین روی ::before یک دوره (۱۰px) بلندتر است و همان یک دوره جابه‌جا می‌شود */
+  .process__flow {
     --flow: 10px;
-    content: "";
     position: absolute;
     top: calc(2.375rem - 1px);
     inset-inline-end: -1.5rem;
     width: 1.5rem;
     height: 2px;
-    background: linear-gradient(90deg, hsla(var(--hue-color), 89%, 60%, 0.65) 50%, transparent 50%) 0 0 / 10px 2px repeat-x;
-    animation: dash-flow 0.9s linear infinite;
+    overflow: hidden;
     pointer-events: none;
   }
 
-  html[dir="rtl"] .process__step:not(:last-child)::after {
+  .process__flow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: -10px;
+    width: calc(100% + 10px);
+    background: linear-gradient(90deg, hsla(var(--hue-color), 89%, 60%, 0.65) 50%, transparent 50%) 0 0 / 10px 2px repeat-x;
+    animation: dash-flow 0.9s linear infinite;
+  }
+
+  html[dir="rtl"] .process__flow {
     --flow: -10px;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .process__flow {
+    display: none;
   }
 }
 
 @keyframes dash-flow {
   from {
-    background-position: 0 0;
+    transform: translateX(0);
   }
 
   to {
-    background-position: var(--flow, 10px) 0;
+    transform: translateX(var(--flow, 10px));
   }
 }
 
