@@ -9,7 +9,7 @@
  *   node tools/deploy-to-arvan.js --yes --all      همه‌ی فایل‌ها را دوباره بفرست
  *
  * کلیدها (Access Key / Secret Key از «مدیریت دسترسی» پنل آروان) هرگز داخل پروژه نمی‌روند. یکی از این دو راه:
- *   1) فایل  %USERPROFILE%\.arvan-deploy.json  با این محتوا:  { "accessKey": "...", "secretKey": "..." }
+ *   1) فایل  %USERPROFILE%\.arvan-deploy-mohammadreza.json  با این محتوا:  { "accessKey": "...", "secretKey": "..." }
  *   2) متغیرهای محیطی ARVAN_ACCESS_KEY و ARVAN_SECRET_KEY
  *
  * فقط فایل‌های لازمِ سایت می‌روند (index.html، robots.txt، sitemap.xml و پوشه‌ی assets به‌جز scss) و فقط آن‌هایی که با نسخه‌ی صندوقچه فرق دارند.
@@ -83,7 +83,7 @@ function signV4({ method, host, path: urlPath, query = '', headers = {}, payload
 // ---------- پیکربندی و کلیدها ----------
 function loadConfig() {
   const cfg = { ...DEFAULTS };
-  const file = path.join(os.homedir(), '.arvan-deploy.json');
+  const file = path.join(os.homedir(), '.arvan-deploy-mohammadreza.json'); // فایل جدا از کلیدهای سایت علیرضا: حساب آروان این سایت جداست
   let fromFile = {};
   if (fs.existsSync(file)) {
     try { fromFile = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { throw new Error(`فایل ${file} JSON معتبر نیست: ${e.message}`); }

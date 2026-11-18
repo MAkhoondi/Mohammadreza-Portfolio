@@ -49,9 +49,9 @@
 ├── index.html            ساختار و محتوای اصلی صفحه
 ├── robots.txt
 ├── sitemap.xml
-├── CNAME                 دامنه‌ی سفارشی برای GitHub Pages
+├── CNAME                 دامنه‌ی سفارشی برای GitHub Pages (فقط برای هدایت www)
 ├── tools/
-│   └── deploy-to-arvan.js  انتشار فایل‌های تغییرکرده روی صندوقچه‌ی آروان (اختیاری)
+│   └── deploy-to-arvan.js  انتشار فایل‌های تغییرکرده روی صندوقچه‌ی آروان
 └── assets/
     ├── css/              styles.css و فایل‌های آیکون
     ├── js/
@@ -97,13 +97,12 @@ python -m http.server 8000
 
 ### استقرار (Deployment)
 
-سایت استاتیک است و روی **GitHub Pages** میزبانی می‌شود:
+سایت استاتیک است. کد روی GitHub نگه‌داری می‌شود، ولی سایت زنده از یک **صندوقچه‌ی ArvanCloud (Object Storage با «استاتیک وب‌سایت»)** پشت CDN آروان سرو می‌شود، نه از GitHub Pages؛ پس push به GitHub به‌تنهایی سایت زنده را عوض نمی‌کند.
 
-1. ریپازیتوری را در گیت‌هاب بسازید و کدها را push کنید.
-2. در مسیر **Settings → Pages** گزینه‌ی **Deploy from a branch** را انتخاب کنید، برنچ مورد نظر را بگذارید و پوشه را `/ (root)` انتخاب کنید.
-3. اگر دامنه‌ی سفارشی دارید، آن را در همین بخش وارد کنید (فایل `CNAME` ساخته می‌شود) و رکوردهای DNS را طبق [راهنمای رسمی GitHub Pages](https://docs.github.com/en/pages) تنظیم کنید.
-4. پس از صدور گواهی SSL، گزینه‌ی **Enforce HTTPS** را فعال کنید. اگر سایت پشت CDN قرار دارد، ممکن است این گزینه در GitHub در دسترس نباشد؛ در این صورت HTTPS را از تنظیمات CDN فعال کنید.
-5. **اختیاری، انتشار روی صندوقچه‌ی ArvanCloud:** اگر مبدأ CDN را از GitHub Pages به یک صندوقچه‌ی آروان (Object Storage با «استاتیک وب‌سایت») ببرید، فایل‌های سایت را می‌توان با یک دستور فرستاد. صندوقچه باید اول در پنل آروان ساخته شود و نامش با `bucket` در `tools/deploy-to-arvan.js` یکی باشد. کلیدهای صندوقچه (Access Key و Secret Key از «مدیریت دسترسی» پنل آروان) را در فایل `%USERPROFILE%\.arvan-deploy.json` بگذارید: `{ "accessKey": "...", "secretKey": "..." }`؛ این فایل هرگز نباید داخل پروژه یا git برود. `node tools/deploy-to-arvan.js` فقط نشان می‌دهد چه چیزی تغییر کرده؛ `node tools/deploy-to-arvan.js --yes` فایل‌های تغییرکرده را می‌فرستد (با `--delete` فایل‌های حذف‌شده هم پاک می‌شوند) و در پایان آدرس‌هایی را که باید در پنل آروان (CDN ← Caching ← پاک‌کردن گزینشی) پاک شوند چاپ می‌کند.
+1. تغییرها را commit و push کنید.
+2. کلیدهای صندوقچه (Access Key و Secret Key از «مدیریت دسترسی» پنل آروانِ همین حساب) را در فایل `%USERPROFILE%\.arvan-deploy-mohammadreza.json` بگذارید: `{ "accessKey": "...", "secretKey": "..." }`. این فایل هرگز نباید داخل پروژه یا git برود.
+3. `node tools/deploy-to-arvan.js` فقط نشان می‌دهد چه چیزی تغییر کرده؛ `node tools/deploy-to-arvan.js --yes` فایل‌های تغییرکرده را روی صندوقچه می‌فرستد (با `--delete` فایل‌های حذف‌شده هم پاک می‌شوند) و در پایان آدرس‌هایی را که باید در پنل آروان (CDN ← Caching ← پاک‌کردن گزینشی) پاک شوند چاپ می‌کند. «پاک‌سازی همه» را نزنید؛ کش خالی یعنی بازدیدکننده‌های بعدی دوباره منتظر کشیده‌شدن فایل‌ها می‌مانند.
+4. رکورد `@` دامنه در CDN از نوع **ANAME** به آدرس وب‌سایت صندوقچه است (`mohamadrezaakhoondi-web.s3-website.ir-central1.arvanstorage.ir`)، با «هدر هاست» برابر همان آدرس و پروتکل ارتباط با سرور اصلی روی HTTP. رکورد `www` هنوز به GitHub Pages می‌رود و به دامنه‌ی اصلی هدایت می‌شود، پس فایل `CNAME` را پاک نکنید.
 
 ### بهینه‌سازی عملکرد
 
@@ -172,9 +171,9 @@ This repository contains the personal portfolio website of **Mohammadreza Akhoon
 ├── index.html            Main page structure and content
 ├── robots.txt
 ├── sitemap.xml
-├── CNAME                 Custom domain for GitHub Pages
+├── CNAME                 Custom domain for GitHub Pages (only used to redirect www now)
 ├── tools/
-│   └── deploy-to-arvan.js  Uploads the changed files to an ArvanCloud bucket (optional)
+│   └── deploy-to-arvan.js  Uploads the changed files to the ArvanCloud bucket
 └── assets/
     ├── css/              styles.css and icon font styles
     ├── js/
@@ -218,13 +217,12 @@ python -m http.server 8000
 
 ### Deployment
 
-The site is static and is hosted on **GitHub Pages**:
+The site is static. The code lives on GitHub, but the live site is served from an **ArvanCloud bucket (Object Storage with "static website") behind the ArvanCloud CDN**, not from GitHub Pages; so pushing to GitHub alone does not change the live site.
 
-1. Create a repository on GitHub and push the code.
-2. Go to **Settings → Pages**, choose **Deploy from a branch**, select your branch, and set the folder to `/ (root)`.
-3. To use a custom domain, enter it in the same section (this creates the `CNAME` file), then configure your DNS records following the [official GitHub Pages documentation](https://docs.github.com/en/pages).
-4. Once the SSL certificate is issued, enable **Enforce HTTPS**. If the site sits behind a CDN, this option may be unavailable in GitHub; in that case, enable HTTPS in the CDN settings instead.
-5. **Optional, publishing to an ArvanCloud bucket:** if you move the CDN origin from GitHub Pages to an ArvanCloud bucket (Object Storage with "static website"), the site files can be uploaded with one command. The bucket has to be created in the Arvan panel first and its name has to match `bucket` in `tools/deploy-to-arvan.js`. Put the bucket keys (Access Key and Secret Key from "Access management" in the Arvan panel) in `%USERPROFILE%\.arvan-deploy.json`: `{ "accessKey": "...", "secretKey": "..." }`; this file must never go into the project or git. `node tools/deploy-to-arvan.js` only shows what changed; `node tools/deploy-to-arvan.js --yes` uploads the changed files (add `--delete` to remove files that no longer exist) and finally prints the URLs to purge in the Arvan panel (CDN, Caching, selective purge).
+1. Commit and push your changes.
+2. Put the bucket keys (Access Key and Secret Key from "Access management" in the Arvan panel of this account) in `%USERPROFILE%\.arvan-deploy-mohammadreza.json`: `{ "accessKey": "...", "secretKey": "..." }`. This file must never go into the project or git.
+3. `node tools/deploy-to-arvan.js` only shows what changed; `node tools/deploy-to-arvan.js --yes` uploads the changed files to the bucket (add `--delete` to remove files that no longer exist) and finally prints the URLs to purge in the Arvan panel (CDN, Caching, selective purge). Do not use "purge everything": an empty cache makes the next visitors wait while every file is pulled again.
+4. The domain's `@` record in the CDN is an **ANAME** to the bucket's website address (`mohamadrezaakhoondi-web.s3-website.ir-central1.arvanstorage.ir`), with the "Host header" set to that same address and the origin protocol set to HTTP. The `www` record still goes to GitHub Pages and redirects to the main domain, so keep the `CNAME` file.
 
 ### Performance
 
