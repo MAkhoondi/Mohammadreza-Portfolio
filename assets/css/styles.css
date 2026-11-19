@@ -5007,3 +5007,67 @@ html[data-theme="dark"] .trust__item {
     --i: 8;
   }
 }
+
+/* ===== رنگ برند آیکون‌های شبکه‌ی اجتماعی هنگام هاور (هدر صفحه و فوتر) =====
+   حالت عادی همان قبلی است؛ با هاور (دسکتاپ) یا لمس (موبایل) رنگ اصلی هر برنامه می‌آید */
+@media screen and (min-width: 768px) {
+  .home__social-icon[aria-label="LinkedIn"]:hover,
+  .footer__icon[aria-label="LinkedIn"]:hover {
+    color: #0a66c2;
+  }
+
+  .home__social-icon[aria-label="Telegram"]:hover,
+  .footer__icon[aria-label="Telegram"]:hover {
+    color: #26a5e4;
+  }
+
+  .home__social-icon[aria-label="Instagram"]:hover,
+  .footer__icon[aria-label="Instagram"]:hover {
+    color: #e4405f;
+  }
+
+  .home__social-icon[aria-label="GitHub"]:hover {
+    color: #6e5494;
+  }
+
+  .footer__icon[aria-label="LinkedIn"]:hover,
+  html[data-theme="dark"] .home__social-icon[aria-label="LinkedIn"]:hover {
+    color: #378fe9;
+  }
+
+  .footer__icon[aria-label="GitHub"]:hover,
+  html[data-theme="dark"] .home__social-icon[aria-label="GitHub"]:hover {
+    color: #b392f0;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .home__social-icon[aria-label="LinkedIn"]:has(.is-pressed),
+  .footer__icon[aria-label="LinkedIn"]:has(.is-pressed) {
+    color: #0a66c2;
+  }
+
+  .home__social-icon[aria-label="Telegram"]:has(.is-pressed),
+  .footer__icon[aria-label="Telegram"]:has(.is-pressed) {
+    color: #26a5e4;
+  }
+
+  .home__social-icon[aria-label="Instagram"]:has(.is-pressed),
+  .footer__icon[aria-label="Instagram"]:has(.is-pressed) {
+    color: #e4405f;
+  }
+
+  .home__social-icon[aria-label="GitHub"]:has(.is-pressed) {
+    color: #6e5494;
+  }
+
+  .footer__icon[aria-label="LinkedIn"]:has(.is-pressed),
+  html[data-theme="dark"] .home__social-icon[aria-label="LinkedIn"]:has(.is-pressed) {
+    color: #378fe9;
+  }
+
+  .footer__icon[aria-label="GitHub"]:has(.is-pressed),
+  html[data-theme="dark"] .home__social-icon[aria-label="GitHub"]:has(.is-pressed) {
+    color: #b392f0;
+  }
+}
